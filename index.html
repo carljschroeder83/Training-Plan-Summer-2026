@@ -282,18 +282,6 @@ h1{
 /* ═══════════════════════════════════════════════════════════════════════════
    SESSION INTENT PANEL
    ═══════════════════════════════════════════════════════════════════════════ */
-.intent-toggle{
-  font-size:var(--fs-sm);
-  font-weight:600;
-  color:var(--run);
-  background:none;border:none;
-  padding:var(--sp-2) 0;
-  min-height:var(--tap);
-  text-align:left;
-  text-decoration:underline;
-  text-underline-offset:3px;
-  white-space:nowrap;
-}
 .intent{
   display:none;
   margin-top:var(--sp-1);
@@ -323,16 +311,20 @@ h1{
    CONTROLS — every tappable thing is at least 44px
    ═══════════════════════════════════════════════════════════════════════════ */
 .ctrl-row{
-  display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(104px,1fr));
+  gap:var(--sp-2);
   margin-top:var(--sp-2);
   padding-top:var(--sp-2);
   border-top:1px solid var(--line-soft);
 }
 .tbtn{
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  min-width:0;
   font-size:var(--fs-sm);
   font-weight:600;
   min-height:var(--tap);
-  padding:0 var(--sp-4);
+  padding:0 var(--sp-2);
   border-radius:var(--r-sm);
   border:1px solid var(--line);
   background:var(--surface);
@@ -341,21 +333,18 @@ h1{
   white-space:nowrap;
 }
 .tbtn:hover{border-color:var(--ink-3);color:var(--ink)}
-.tbtn.is-done{background:var(--done);color:#fff;border-color:var(--done)}
-.tbtn.is-skip{background:var(--sunk);color:var(--ink-3);border-color:var(--line)}
-.ntoggle{
-  font-size:var(--fs-sm);
-  color:var(--ink-2);
-  cursor:pointer;
-  text-decoration:underline;
-  text-underline-offset:3px;
-  margin-left:auto;
-  white-space:nowrap;
-  min-height:var(--tap);
-  display:inline-flex;align-items:center;
-  padding:0 var(--sp-1);
-}
-.ntoggle:hover{color:var(--ink)}
+.tbtn .lbl{min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* Icons inherit --ico so each button can tint independently of its label,
+   then flip to the fill colour when the button becomes active. */
+.tbtn .ico{width:1.125rem;height:1.125rem;flex:none;color:var(--ico,currentColor)}
+.tbtn .emoji{font-size:1.0625rem;line-height:1;flex:none}
+.tbtn-done{--ico:var(--done)}
+.tbtn-skip{--ico:var(--danger)}
+.tbtn-notes{--ico:var(--ink-3)}
+.tbtn.is-done{background:var(--done);color:#fff;border-color:var(--done);--ico:#fff}
+.tbtn.is-skip{background:var(--sunk);color:var(--ink-3);border-color:var(--line);--ico:var(--ink-3)}
+/* Open state for the two disclosure buttons (intent, notes) */
+.tbtn.is-open{background:var(--sunk);border-color:var(--ink-3);color:var(--ink)}
 
 /* ── Sleep & energy ──────────────────────────────────────────────────────── */
 .sleep-row{
@@ -819,6 +808,17 @@ const PLAN = {
   ]}
 };
 
+// ── Button icons — inline SVG so they work offline and inherit button colour ──
+const SVG = (p) => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" `
+  + `stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICONS = {
+  done : SVG('<path d="M20 6 9 17l-5-5"/>'),
+  skip : SVG('<path d="M18 6 6 18M6 6l12 12"/>'),
+  notes: SVG('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8.5 3v18M12 9.5h4.5M12 14.5h4.5"/>'),
+  intent: '<span class="emoji" aria-hidden="true">🎯</span>'
+};
+const tbtnInner = (icon, label) => `${ICONS[icon]}<span class="lbl">${label}</span>`;
+
 const BADGE_LABELS = {'b-key':'Key session','b-run':'Run','b-ride':'Ride','b-str':'Strength','b-hit':'HIIT','b-rst':'Rest'};
 const ENERGY_EMOJIS = ['','😴','😕','😐','🙂','⚡'];
 const ENERGY_LABELS = ['','Exhausted','Low','OK','Good','Great'];
@@ -939,7 +939,10 @@ function intentHTML(key){
 
 function toggleIntent(dKey){
   const el=document.getElementById('in_'+dKey);
-  if(el)el.classList.toggle('vis');
+  if(!el)return;
+  const open=el.classList.toggle('vis');
+  const b=document.getElementById('ib_'+dKey);
+  if(b){b.classList.toggle('is-open',open);b.setAttribute('aria-expanded',open?'true':'false');}
 }
 
 // ── Storage ───────────────────────────────────────────────────────────────────
@@ -1027,7 +1030,7 @@ function buildPhase(phaseId){
 
       // Key sessions show intent expanded by default; everything else collapsed.
       const iOpen=iKey&&day.b==='b-key';
-      const iBtn=iKey?`<button class="intent-toggle" onclick="toggleIntent('${dKey}')">🎯 intent</button>`:'';
+      const iBtn=iKey?`<button class="tbtn tbtn-intent${iOpen?' is-open':''}" id="ib_${dKey}" aria-expanded="${iOpen?'true':'false'}" onclick="toggleIntent('${dKey}')">${tbtnInner('intent','Intent')}</button>`:'';
       const iPanel=iKey?`<div class="intent${iOpen?' vis':''}" id="in_${dKey}">${intentHTML(iKey)}</div>`:'';
 
       dc.innerHTML=`
@@ -1035,13 +1038,13 @@ function buildPhase(phaseId){
         <span class="session-name">${day.s}</span>
         <span class="session-detail">${day.d}</span>
         <span class="badge ${day.b}">${BADGE_LABELS[day.b]||'Rest'}</span>
-        ${iPanel}
         <div class="ctrl-row">
-          <button class="tbtn${status==='done'?' is-done':''}" id="db_${dKey}" onclick="setStatus('${dKey}','${wKey}','${phaseId}','done')">${status==='done'?'✓ Done':'Mark done'}</button>
-          <button class="tbtn${status==='skipped'?' is-skip':''}" id="sb_${dKey}" onclick="setStatus('${dKey}','${wKey}','${phaseId}','skipped')">${status==='skipped'?'Skipped':'Skip'}</button>
           ${iBtn}
-          <span class="ntoggle" onclick="toggleNote('${dKey}')">notes</span>
+          <button class="tbtn tbtn-done${status==='done'?' is-done':''}" id="db_${dKey}" onclick="setStatus('${dKey}','${wKey}','${phaseId}','done')">${tbtnInner('done',status==='done'?'Done':'Mark done')}</button>
+          <button class="tbtn tbtn-skip${status==='skipped'?' is-skip':''}" id="sb_${dKey}" onclick="setStatus('${dKey}','${wKey}','${phaseId}','skipped')">${tbtnInner('skip',status==='skipped'?'Skipped':'Skip')}</button>
+          <button class="tbtn tbtn-notes${notes?' is-open':''}" id="nb_${dKey}" aria-expanded="${notes?'true':'false'}" onclick="toggleNote('${dKey}')">${tbtnInner('notes','Notes')}</button>
         </div>
+        ${iPanel}
         <div class="sleep-row">
           <span class="slabel">😴</span>
           <input class="sinput" type="number" min="3" max="12" step="0.5" placeholder="hrs" value="${sleepV}" id="si_${dKey}" onchange="saveSleep('${dKey}','${wKey}','${phaseId}')" title="Hours slept"/>
@@ -1090,10 +1093,10 @@ function setStatus(dKey,wKey,phaseId,val){
   if(ns==='skipped')dc.classList.add('skip-card');
   const db=document.getElementById('db_'+dKey);
   const sb=document.getElementById('sb_'+dKey);
-  db.textContent=ns==='done'?'✓ Done':'Mark done';
-  db.className='tbtn'+(ns==='done'?' is-done':'');
-  sb.textContent=ns==='skipped'?'Skipped':'Skip';
-  sb.className='tbtn'+(ns==='skipped'?' is-skip':'');
+  db.innerHTML=tbtnInner('done',ns==='done'?'Done':'Mark done');
+  db.className='tbtn tbtn-done'+(ns==='done'?' is-done':'');
+  sb.innerHTML=tbtnInner('skip',ns==='skipped'?'Skipped':'Skip');
+  sb.className='tbtn tbtn-skip'+(ns==='skipped'?' is-skip':'');
   const wi=PLAN[phaseId].weeks.findIndex(w=>wKey===phaseId+'_'+w.n);
   updateSummary(wKey,phaseId,wi);
 }
@@ -1114,7 +1117,13 @@ function setEnergy(dKey,wKey,phaseId,val){
 }
 
 // ── Notes ─────────────────────────────────────────────────────────────────────
-function toggleNote(dKey){const el=document.getElementById('nt_'+dKey);el.classList.toggle('vis');if(el.classList.contains('vis'))el.focus();}
+function toggleNote(dKey){
+  const el=document.getElementById('nt_'+dKey);
+  const open=el.classList.toggle('vis');
+  const b=document.getElementById('nb_'+dKey);
+  if(b){b.classList.toggle('is-open',open);b.setAttribute('aria-expanded',open?'true':'false');}
+  if(open)el.focus();
+}
 function saveNote(dKey){sv(dKey+'_notes',document.getElementById('nt_'+dKey).value);}
 function saveWNote(wKey){sv(wKey+'_note',document.getElementById('wn_'+wKey).value);}
 
@@ -1207,8 +1216,9 @@ function clearWeek(wKey,phaseId,wNum){
     const dKey=wKey+'_d'+di;
     sv(dKey+'_status','pending');sv(dKey+'_notes','');sv(dKey+'_sleep','');sv(dKey+'_energy',0);
     const dc=document.getElementById('dc_'+dKey);if(dc)dc.classList.remove('done-card','skip-card');
-    const db=document.getElementById('db_'+dKey);if(db){db.textContent='Mark done';db.className='tbtn';}
-    const sb=document.getElementById('sb_'+dKey);if(sb){sb.textContent='Skip';sb.className='tbtn';}
+    const db=document.getElementById('db_'+dKey);if(db){db.innerHTML=tbtnInner('done','Mark done');db.className='tbtn tbtn-done';}
+    const sb=document.getElementById('sb_'+dKey);if(sb){sb.innerHTML=tbtnInner('skip','Skip');sb.className='tbtn tbtn-skip';}
+    const nb=document.getElementById('nb_'+dKey);if(nb){nb.classList.remove('is-open');nb.setAttribute('aria-expanded','false');}
     const nt=document.getElementById('nt_'+dKey);if(nt){nt.value='';nt.classList.remove('vis');}
     const si=document.getElementById('si_'+dKey);if(si)si.value='';
     for(let i=1;i<=5;i++){const eb=document.getElementById('eb_'+dKey+'_'+i);if(eb)eb.classList.remove('active');}
