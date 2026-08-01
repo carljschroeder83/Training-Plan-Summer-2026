@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#f7f6f2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Summer Plan">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Carl Summer Plan Refined</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   Change a value here and it propagates everywhere. No hunting.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  /* ── Surfaces & ink ─────────────────────────────────────────────────────── */
+  --bg:#f7f6f2;
+  --surface:#ffffff;
+  --sunk:#efeee7;
+  --line:#dbd9cf;
+  --line-soft:#e8e6dd;
+  --ink:#17171a;      /* primary text    — 15.7:1 on --bg  (AAA) */
+  --ink-2:#55544f;    /* secondary text  —  7.2:1 on --bg  (AAA) */
+  --ink-3:#6e6d66;    /* labels, meta    —  4.8:1 on --bg  (AA)  */
+
+  /* ── Session-type accents — drive both badges and the card spine ────────── */
+  --run:#0C447C;   --run-bg:#E1EDFA;
+  --ride:#085041;  --ride-bg:#DCF2EA;
+  --str:#6B3D06;   --str-bg:#F8EAD2;
+  --hit:#3C3489;   --hit-bg:#E9E8FD;
+  --rst:#5C5B55;   --rst-bg:#EAE8E0;
+  --key:#17171a;
+
+  /* ── Status ─────────────────────────────────────────────────────────────── */
+  --done:#14755A;       /* 5.6:1 with white text (AA) */
+  --done-soft:#1D9E75;  /* borders + progress fill only — never text */
+  --danger:#B4342F;     /* 5.6:1 on --bg (AA) */
+
+  /* ── Type scale ─────────────────────────────────────────────────────────────
+     All rem. The app now respects your phone's system text-size setting —
+     bump text size in Android settings and the whole thing scales.
+     --fs-xs is the floor. Nothing gets smaller than 13px.                     */
+  --fs-xs:0.8125rem;   /* 13px */
+  --fs-sm:0.875rem;    /* 14px */
+  --fs-base:1rem;      /* 16px — session detail, card body */
+  --fs-md:1.0625rem;   /* 17px — session names */
+  --fs-lg:1.375rem;    /* 22px */
+  --fs-xl:1.75rem;     /* 28px — page title, metric values */
+
+  --ff:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --ff-mono:ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace;
+
+  /* ── Space & shape ──────────────────────────────────────────────────────── */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
+  --r-sm:6px; --r:10px; --r-lg:14px; --r-pill:999px;
+  --tap:44px;          /* minimum touch target — WCAG 2.5.5 AAA */
+  --shadow:0 1px 2px rgba(23,23,26,.04),0 2px 10px rgba(23,23,26,.045);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:100%;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--ff);
+  font-size:var(--fs-base);
+  line-height:1.5;
+  background:var(--bg);
+  color:var(--ink);
+  padding:var(--sp-5);
+  max-width:860px;
+  margin:0 auto;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,textarea{font-family:inherit;font-size:inherit}
+button{cursor:pointer}
+
+/* Visible keyboard focus everywhere — nothing relies on the browser default */
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:var(--r-sm)}
+
+h1{
+  font-size:var(--fs-xl);
+  font-weight:700;
+  letter-spacing:-0.02em;
+  line-height:1.15;
+  margin-bottom:var(--sp-2);
+}
+.subtitle{
+  font-size:var(--fs-sm);
+  color:var(--ink-2);
+  margin-bottom:var(--sp-6);
+  max-width:60ch;
+}
+.sec{margin-bottom:var(--sp-6)}
+.sec-label{
+  font-size:var(--fs-xs);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.09em;
+  color:var(--ink-3);
+  margin-bottom:var(--sp-3);
+}
+.phase-note{
+  font-size:var(--fs-sm);
+  color:var(--ink-2);
+  margin-bottom:var(--sp-3);
+  max-width:75ch;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PHASE + WEEK TABS  — all tap targets meet 44px
+   ═══════════════════════════════════════════════════════════════════════════ */
+.phase-tabs{display:flex;gap:var(--sp-2);margin-bottom:var(--sp-4);flex-wrap:wrap}
+.phase-tab{
+  font-size:var(--fs-sm);
+  font-weight:600;
+  min-height:var(--tap);
+  padding:0 var(--sp-4);
+  border-radius:var(--r-pill);
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--ink-2);
+  transition:background .15s,color .15s,border-color .15s;
+}
+.phase-tab:hover{border-color:var(--ink-3);color:var(--ink)}
+.phase-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.phase-panel{display:none}
+.phase-panel.active{display:block}
+
+.week-tabs{display:flex;gap:var(--sp-2);margin-bottom:var(--sp-3);flex-wrap:wrap}
+.week-tab{
+  font-size:var(--fs-sm);
+  font-weight:600;
+  min-height:var(--tap);
+  padding:0 var(--sp-4);
+  border-radius:var(--r-pill);
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--ink-2);
+  transition:background .15s,color .15s,border-color .15s;
+  white-space:nowrap;
+}
+.week-tab:hover{border-color:var(--ink-3);color:var(--ink)}
+.week-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* Completed-week tick now sits inside the pill — no clipping at container edges */
+.week-tab.wdone::after{content:'✓';margin-left:var(--sp-2);color:var(--done);font-weight:700}
+.week-tab.active.wdone::after{color:#6FDCB8}
+.week-panel{display:none}
+.week-panel.active{display:block}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WEEK CONTEXT — focus bar, deload banner, sticky summary
+   ═══════════════════════════════════════════════════════════════════════════ */
+.week-focus{
+  font-size:var(--fs-base);
+  color:var(--ink-2);
+  margin-bottom:var(--sp-2);
+  padding:var(--sp-3) var(--sp-4);
+  background:var(--sunk);
+  border-radius:var(--r);
+  border-left:4px solid var(--ink);
+}
+.week-focus strong{color:var(--ink)}
+.deload-banner{
+  background:var(--hit-bg);
+  border:1px solid #c3bff5;
+  border-radius:var(--r);
+  padding:var(--sp-3) var(--sp-4);
+  font-size:var(--fs-sm);
+  font-weight:500;
+  color:var(--hit);
+  margin-bottom:var(--sp-2);
+}
+.week-summary{
+  display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;
+  background:var(--sunk);
+  border-radius:var(--r);
+  padding:var(--sp-3) var(--sp-4);
+  margin-bottom:var(--sp-3);
+  font-size:var(--fs-sm);
+  color:var(--ink-2);
+  font-variant-numeric:tabular-nums;
+}
+.week-summary strong{color:var(--ink);font-weight:700}
+.pbar-wrap{
+  background:#dedcd3;
+  border-radius:var(--r-pill);
+  height:8px;width:96px;
+  overflow:hidden;
+  display:inline-block;vertical-align:middle;
+  margin-left:var(--sp-1);
+}
+.pbar-fill{height:100%;background:var(--done-soft);border-radius:var(--r-pill);transition:width .3s ease}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DAY CARDS
+   SIGNATURE: the intensity spine. Every card carries a full-height colour bar
+   in its session-type colour, so a week reads as a stripe pattern before you
+   read a single word — the pyramidal intensity distribution made visible.
+   Colour is resolved from the badge class via :has(), so no JS change needed.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.day-grid{
+  display:grid;
+  grid-template-columns:1fr;   /* always one session per row — never squished */
+  gap:var(--sp-3);
+  margin-bottom:var(--sp-3);
+}
+.day-card{
+  position:relative;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:var(--sp-4) var(--sp-4) var(--sp-4) calc(var(--sp-4) + 6px);
+  display:flex;flex-direction:column;gap:var(--sp-2);
+  box-shadow:var(--shadow);
+  transition:border-color .15s,box-shadow .15s;
+  --spine:var(--line);
+}
+.day-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:6px;
+  background:var(--spine);
+  border-radius:var(--r-lg) 0 0 var(--r-lg);
+}
+.day-card:has(.b-run){--spine:var(--run)}
+.day-card:has(.b-ride){--spine:var(--ride)}
+.day-card:has(.b-str){--spine:var(--str)}
+.day-card:has(.b-hit){--spine:var(--hit)}
+.day-card:has(.b-rst){--spine:#cfcdc3}
+.day-card:has(.b-key){--spine:var(--key)}
+
+/* Key sessions carry visible weight — they should look like the week's spine */
+.day-card:has(.b-key){border-color:#bfbdb2;box-shadow:0 2px 4px rgba(23,23,26,.06),0 6px 18px rgba(23,23,26,.07)}
+.day-card:has(.b-key) .session-name{font-size:var(--fs-lg);letter-spacing:-0.01em}
+
+.day-card.rest-bg{background:#fbfaf6;box-shadow:none}
+.day-card.done-card{border-color:var(--done-soft);border-width:2px;padding:calc(var(--sp-4) - 1px) calc(var(--sp-4) - 1px) calc(var(--sp-4) - 1px) calc(var(--sp-4) + 5px)}
+.day-card.skip-card{opacity:.55}
+
+.day-name{
+  font-size:var(--fs-xs);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  color:var(--ink-3);
+}
+.session-name{
+  font-size:var(--fs-md);
+  font-weight:700;
+  color:var(--ink);
+  line-height:1.25;
+  letter-spacing:-0.005em;
+}
+.session-detail{
+  font-size:var(--fs-base);
+  color:var(--ink-2);
+  line-height:1.55;
+  flex:1;
+  font-variant-numeric:tabular-nums;  /* paces and splits align like a log */
+}
+.day-card > .badge{position:absolute;top:var(--sp-4);right:var(--sp-4)}
+.day-card > .day-name{padding-right:130px}
+.badge{
+  display:inline-block;
+  font-size:var(--fs-xs);
+  font-weight:700;
+  letter-spacing:0.02em;
+  padding:var(--sp-1) var(--sp-2);
+  border-radius:var(--r-sm);
+  width:fit-content;
+}
+.b-run{background:var(--run-bg);color:var(--run)}
+.b-ride{background:var(--ride-bg);color:var(--ride)}
+.b-str{background:var(--str-bg);color:var(--str)}
+.b-hit{background:var(--hit-bg);color:var(--hit)}
+.b-rst{background:var(--rst-bg);color:var(--rst)}
+.b-key{background:var(--key);color:#fff}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SESSION INTENT PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+.intent{
+  display:none;
+  margin-top:var(--sp-1);
+  background:var(--sunk);
+  border-radius:var(--r);
+  padding:var(--sp-3) var(--sp-3);
+  border-left:3px solid var(--ink);
+}
+.intent.vis{display:block}
+.intent-hd{font-size:var(--fs-sm);font-weight:700;color:var(--ink);margin-bottom:var(--sp-2)}
+.intent-row{margin-bottom:var(--sp-2)}
+.intent-row:last-child{margin-bottom:0}
+.intent-lbl{
+  display:block;
+  font-size:var(--fs-xs);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.07em;
+  color:var(--ink-3);
+  margin-bottom:2px;
+}
+.intent-txt{font-size:var(--fs-sm);line-height:1.55;color:var(--ink-2)}
+.intent-row.fail .intent-lbl{color:var(--danger)}
+.intent-row.fail .intent-txt{color:#8F2F2A}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTROLS — every tappable thing is at least 44px
+   ═══════════════════════════════════════════════════════════════════════════ */
+.ctrl-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(104px,1fr));
+  gap:var(--sp-2);
+  margin-top:var(--sp-2);
+  padding-top:var(--sp-2);
+  border-top:1px solid var(--line-soft);
+}
+.tbtn{
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  min-width:0;
+  font-size:var(--fs-sm);
+  font-weight:600;
+  min-height:var(--tap);
+  padding:0 var(--sp-2);
+  border-radius:var(--r-sm);
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--ink-2);
+  transition:background .12s,color .12s,border-color .12s;
+  white-space:nowrap;
+}
+.tbtn:hover{border-color:var(--ink-3);color:var(--ink)}
+.tbtn .lbl{min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* Icons inherit --ico so each button can tint independently of its label,
+   then flip to the fill colour when the button becomes active. */
+.tbtn .ico{width:1.125rem;height:1.125rem;flex:none;color:var(--ico,currentColor)}
+.tbtn .emoji{font-size:1.0625rem;line-height:1;flex:none}
+.tbtn-done{--ico:var(--done)}
+.tbtn-skip{--ico:var(--danger)}
+.tbtn-notes{--ico:var(--ink-3)}
+.tbtn.is-done{background:var(--done);color:#fff;border-color:var(--done);--ico:#fff}
+.tbtn.is-skip{background:var(--sunk);color:var(--ink-3);border-color:var(--line);--ico:var(--ink-3)}
+/* Open state for the two disclosure buttons (intent, notes) */
+.tbtn.is-open{background:var(--sunk);border-color:var(--ink-3);color:var(--ink)}
+
+/* ── Sleep & energy ──────────────────────────────────────────────────────── */
+.sleep-row{
+  display:flex;align-items:center;gap:var(--sp-1);flex-wrap:wrap;
+  margin-top:var(--sp-2);
+  padding-top:var(--sp-2);
+  border-top:1px solid var(--line-soft);
+}
+.slabel{font-size:var(--fs-sm);color:var(--ink-2);white-space:nowrap}
+.sinput{
+  width:62px;
+  min-height:var(--tap);
+  font-size:var(--fs-base);
+  font-variant-numeric:tabular-nums;
+  border:1px solid var(--line);
+  border-radius:var(--r-sm);
+  padding:0 var(--sp-2);
+  text-align:center;
+  background:var(--surface);
+  color:var(--ink);
+}
+.sinput:focus{outline:2px solid var(--ink);outline-offset:1px;border-color:var(--ink)}
+.ebtn{
+  font-size:var(--fs-lg);
+  line-height:1;
+  min-width:var(--tap);min-height:var(--tap);
+  background:none;
+  border:1px solid transparent;
+  border-radius:var(--r-sm);
+  padding:0;
+  opacity:.3;
+  transition:opacity .12s,background .12s;
+}
+.ebtn:hover{opacity:.65}
+.ebtn.active{opacity:1;background:var(--sunk);border-color:var(--line)}
+
+/* ── Notes ───────────────────────────────────────────────────────────────── */
+.ntxt{
+  margin-top:var(--sp-2);
+  width:100%;
+  font-size:var(--fs-base);
+  line-height:1.5;
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  padding:var(--sp-3);
+  background:#fbfaf6;
+  color:var(--ink);
+  resize:vertical;
+  min-height:72px;
+  display:none;
+}
+.ntxt.vis{display:block}
+.ntxt::placeholder,.wnote::placeholder{color:var(--ink-3)}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WEEK NOTE + EXPORT
+   ═══════════════════════════════════════════════════════════════════════════ */
+.wnote-wrap{margin-top:var(--sp-4)}
+.wnote-hdr{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2);flex-wrap:wrap}
+.wnote-lbl{font-size:var(--fs-sm);font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.06em}
+.wnote{
+  width:100%;
+  font-size:var(--fs-base);
+  line-height:1.55;
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  padding:var(--sp-3) var(--sp-4);
+  background:var(--surface);
+  color:var(--ink);
+  min-height:96px;
+  resize:vertical;
+}
+.exp-btn{
+  font-size:var(--fs-sm);
+  font-weight:600;
+  min-height:var(--tap);
+  padding:0 var(--sp-4);
+  border-radius:var(--r-sm);
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--ink);
+}
+.exp-btn:hover{background:var(--sunk);border-color:var(--ink-3)}
+.clr-btn{
+  font-size:var(--fs-sm);
+  color:var(--danger);
+  background:none;border:none;
+  margin-left:auto;
+  min-height:var(--tap);
+  padding:0 var(--sp-1);
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.exp-out{display:none;margin-top:var(--sp-3);background:var(--sunk);border-radius:var(--r);padding:var(--sp-3) var(--sp-4)}
+.exp-hdr{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2);flex-wrap:wrap}
+.exp-lbl{font-size:var(--fs-sm);font-weight:700;color:var(--ink-3)}
+.copy-btn{
+  font-size:var(--fs-sm);
+  font-weight:600;
+  min-height:var(--tap);
+  padding:0 var(--sp-4);
+  border-radius:var(--r-sm);
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:#fff;
+}
+.exp-txt{
+  width:100%;
+  font-size:var(--fs-sm);
+  font-family:var(--ff-mono);
+  line-height:1.5;
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  padding:var(--sp-3);
+  background:var(--surface);
+  color:var(--ink);
+  min-height:180px;
+  resize:vertical;
+  white-space:pre-wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REFERENCE SECTIONS — cards, strength boxes, rules, metrics
+   ═══════════════════════════════════════════════════════════════════════════ */
+.divider{border:none;border-top:1px solid var(--line);margin:var(--sp-6) 0}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:var(--sp-4) var(--sp-5);
+  margin-bottom:var(--sp-3);
+  box-shadow:var(--shadow);
+}
+.card-title{font-size:var(--fs-md);font-weight:700;color:var(--ink);margin-bottom:var(--sp-2);line-height:1.3}
+.card-body{font-size:var(--fs-base);color:var(--ink-2);line-height:1.6;max-width:78ch}
+.card-body strong{color:var(--ink)}
+.sbox{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  padding:var(--sp-4) var(--sp-5);
+  margin-bottom:var(--sp-3);
+  box-shadow:var(--shadow);
+}
+.sbox-title{font-size:var(--fs-md);font-weight:700;color:var(--ink);margin-bottom:var(--sp-3);display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap}
+.sbox ul{padding-left:1.25rem;margin:0}
+.sbox li{font-size:var(--fs-base);color:var(--ink-2);line-height:1.65;margin-bottom:var(--sp-1);font-variant-numeric:tabular-nums}
+.sbox li strong{color:var(--ink)}
+.sbox-note{font-size:var(--fs-sm);color:var(--ink-2);margin-top:var(--sp-3);line-height:1.55}
+
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--sp-3)}
+.rule{background:var(--sunk);border-radius:var(--r);padding:var(--sp-4)}
+.rule-title{font-size:var(--fs-sm);font-weight:700;color:var(--ink);margin-bottom:var(--sp-1);text-transform:uppercase;letter-spacing:0.05em}
+.rule-body{font-size:var(--fs-base);color:var(--ink-2);line-height:1.55}
+
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--sp-3);margin-bottom:var(--sp-5)}
+.metric{background:var(--sunk);border-radius:var(--r);padding:var(--sp-4)}
+.metric-label{font-size:var(--fs-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-3);margin-bottom:var(--sp-1)}
+.metric-value{font-size:var(--fs-xl);font-weight:700;color:var(--ink);letter-spacing:-0.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.metric-sub{font-size:var(--fs-sm);color:var(--ink-2);margin-top:var(--sp-1);line-height:1.45}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width:560px){
+  body{padding:var(--sp-3)}
+  .day-grid{gap:var(--sp-2)}
+  h1{font-size:var(--fs-lg)}
+  .card,.sbox{padding:var(--sp-4)}
+  /* Week progress stays in view while you scroll a 7-day stack */
+  .week-summary{position:sticky;top:0;z-index:5;box-shadow:0 2px 8px rgba(23,23,26,.06)}
+  .exp-txt{min-height:220px}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREFERENCES
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+@media print{
+  .ctrl-row,.sleep-row,.ntxt,.wnote-wrap,.phase-tabs,.week-tabs{display:none!important}
+  .phase-panel,.week-panel{display:block!important}
+  body{padding:0;max-width:none}
+  .day-card{break-inside:avoid;box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<h1>Carl Summer Plan Refined</h1>
+<p class="subtitle">Running + cycling + 1–2 hybrid strength sessions/week · Jun–Sep 2026 · West Byfleet · 16 weeks</p>
+
+<div class="sec">
+<p class="sec-label">Weekly targets — building to by end of summer</p>
+<div class="metric-row">
+  <div class="metric"><p class="metric-label">Running volume</p><p class="metric-value">40–50km</p><p class="metric-sub">Building from ~30km now</p></div>
+  <div class="metric"><p class="metric-label">Cycling</p><p class="metric-value">1–2 rides</p><p class="metric-sub">1 long + 1 sweet spot</p></div>
+  <div class="metric"><p class="metric-label">Strength sessions</p><p class="metric-value">1–2×</p><p class="metric-sub">Hybrid lifting focus</p></div>
+  <div class="metric"><p class="metric-label">Key quality sessions</p><p class="metric-value">2×</p><p class="metric-sub">Threshold + intervals</p></div>
+  <div class="metric"><p class="metric-label">Rest/recovery days</p><p class="metric-value">2×</p><p class="metric-sub">Non-negotiable</p></div>
+</div>
+</div>
+
+<div class="sec">
+<p class="sec-label">16-week summer structure</p>
+<div class="phase-tabs">
+  <button class="phase-tab active" onclick="showPhase('p1',this)">Phase 1 — Rebuild (4 wks)</button>
+  <button class="phase-tab" onclick="showPhase('p2',this)">Phase 2 — Build (8 wks)</button>
+  <button class="phase-tab" onclick="showPhase('p3',this)">Phase 3 — Sharpen (4 wks)</button>
+</div>
+<div id="p1" class="phase-panel active">
+  <p class="phase-note">Goal: re-establish consistency and movement patterns. One quality session per week. Strength at moderate loads. Deload at Week 4.</p>
+  <div class="week-tabs" id="p1-tabs"></div>
+  <div id="p1-weeks"></div>
+</div>
+<div id="p2" class="phase-panel">
+  <p class="phase-note">Goal: progressive overload. Two quality run sessions per week — from Week 9 the VO2 session runs weekly (bike quality moves to Wednesday, replacing HIIT B). Strength loads climbing, capped in VO2 weeks. Deload at Weeks 8 and 12.</p>
+  <div class="week-tabs" id="p2-tabs"></div>
+  <div id="p2-weeks"></div>
+</div>
+<div id="p3" class="phase-panel">
+  <p class="phase-note">Goal: sharpen and benchmark. Higher intensity, slightly reduced volume, regular goal-pace (3:54/km) contact. All threshold paces re-anchored off the Week 12 Parkrun. Strength drops to maintenance. 5k time trial in Week 16.</p>
+  <div class="week-tabs" id="p3-tabs"></div>
+  <div id="p3-weeks"></div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec">
+<p class="sec-label">Session strategy — the one-variable rule</p>
+<div class="card"><p class="card-title">Every session has exactly one target variable</p><p class="card-body">Everything else is a constraint you hold constant so the target variable means something. Most sessions go wrong because the athlete optimises a constraint — usually pace — and destroys the target. Open the <strong>🎯 intent</strong> panel on any session card for its aim, target variable, execution rule and named failure mode.</p></div>
+<div class="card"><p class="card-title">The 30-second pre-session ritual</p><p class="card-body">Before you leave the house, answer three questions out loud: <strong>1.</strong> What is this session's target variable — what am I trying to accumulate? <strong>2.</strong> What is the one number I must not exceed? <strong>3.</strong> What does failure look like today? Naming the failure mode in advance is what stops you doing it in the first 60 seconds, when the legs are fresh and you feel good.</p></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec">
+<p class="sec-label">Hybrid strength sessions — detail</p>
+<div class="sbox">
+  <div class="sbox-title"><span class="badge b-str">Session A</span> Power + lower body</div>
+  <ul>
+    <li><strong>Back squat</strong> — Ph1: 3×5 @70% (112kg) · Ph2: builds to 3×4 @80% (128kg) · Ph3: 3×3 @85% (136kg)</li>
+    <li><strong>Romanian deadlift</strong> — 3×6 @80–100kg, progressing 5kg every 3 weeks. Cap at 3×5 in VO2 weeks — hamstring DOMS was showing up in run quality.</li>
+    <li><strong>Push press</strong> — 3×5 @70–80kg. Keeps the overhead pattern alive.</li>
+    <li><strong>Weighted pull-ups or lat pulldown</strong> — 3×6, add load or reps every 2 weeks</li>
+    <li><strong>Bulgarian split squat</strong> — 2×8/leg, bodyweight → light DB → heavier DB across phases. Drop entirely in VO2 weeks (hip flexor soreness has been hitting the Saturday session).</li>
+    <li><strong>Core</strong> — Hollow hold 3×40s, side plank 3×30s/side</li>
+  </ul>
+</div>
+<div class="sbox">
+  <div class="sbox-title"><span class="badge b-hit">Session B</span> HIIT / metabolic circuit</div>
+  <ul>
+    <li><strong>Kettlebell swings</strong> — 4×15 → 4×20 → 5×15 across phases</li>
+    <li><strong>Box jumps or broad jumps</strong> — 3×5. Plyometric power; direct running speed transfer.</li>
+    <li><strong>DB goblet squat</strong> — 3×10, load increasing each phase</li>
+    <li><strong>Push-up variation</strong> — 3×12 (standard → archer → weighted)</li>
+    <li><strong>Renegade rows</strong> — 3×8/side.</li>
+    <li><strong>Suitcase or farmer carry</strong> — 3×30m, load increasing each phase</li>
+  </ul>
+  <p class="sbox-note">Drop Session B entirely on deload and travel weeks. From Week 10 onward, Session B is retired — the Wednesday sweet spot ride takes its slot so Saturday VO2 running can go weekly.</p>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec">
+<p class="sec-label">Travel rules</p>
+<div class="rules-grid">
+  <div class="rule"><p class="rule-title">Priority 1 (keep always)</p><p class="rule-body">One threshold or quality run. Even 10min tempo in a 5km counts.</p></div>
+  <div class="rule"><p class="rule-title">Priority 2 (keep if possible)</p><p class="rule-body">One easy run of 7–10km. Post-flight shakeouts count.</p></div>
+  <div class="rule"><p class="rule-title">Drop first</p><p class="rule-body">Long run and strength sessions. Don't force on travel fatigue.</p></div>
+  <div class="rule"><p class="rule-title">2-session minimum</p><p class="rule-body">Any week with 2 runs logged is maintenance, not a lost week.</p></div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec">
+<p class="sec-label">Fatigue management</p>
+<div class="card"><p class="card-title">The soreness rule</p><p class="card-body">If legs are sore on a quality run day, swap for easy. If sore on a strength day, drop to bodyweight only or skip.</p></div>
+<div class="card"><p class="card-title">Strength and running same day</p><p class="card-body">Always run first. Quality run after heavy squats degrades badly; strength after easy run is fine.</p></div>
+<div class="card"><p class="card-title">VO2 stimulus comes from rep DURATION, not rep speed</p><p class="card-body">Oxygen uptake takes roughly 90–120 seconds of hard running to reach VO2max — the kinetics are the rate limiter, not the effort. Run a rep faster and you don't arrive sooner, you just finish before the stimulus lands. At supramaximal pace, time at VO2max goes <em>down</em>. Keep reps ≥3 minutes, run them at the SLOW end of the band, and judge the session on minutes accumulated, not on rep splits.</p></div>
+<div class="card"><p class="card-title">Recoveries prime the next rep</p><p class="card-body">Jog them — never stand or walk. The point isn't keeping HR high for its own sake: if VO2 only falls to ~70% between reps, rep 2 reaches VO2max in 40–50s instead of 120s, and rep 3 faster still. That priming compounds. Jog at 6:30–7:00/km, continuous. And prime before rep 1 — strides straight into the first rep, starting within 90 seconds. A long stand before the opener wastes your longest, most valuable rep.</p></div>
+<div class="card"><p class="card-title">HR is descriptive, not prescriptive (until max is measured)</p><p class="card-body">No measured HRmax exists yet, so absolute BPM targets in this plan were guesses. Clean Myzone strap data from the Week 7 track ladder topped out at 164 across reps of escalating pace — if true max is ~178–182, that is ~90% and entirely correct for a VO2 rep. Until a max is measured (hill test in a deload week, or the Week 12 Parkrun finish), <strong>judge every session on pace band, cadence stability and rep completion.</strong> Log HR; don't chase it.</p></div>
+<div class="card"><p class="card-title">Deload weeks</p><p class="card-body">Weeks 4, 8, 12 are planned deloads — volume drops ~30%. Don't skip them; this is where adaptation happens.</p></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec">
+<p class="sec-label">End-of-summer benchmarks (Sep 2026)</p>
+<div class="metric-row">
+  <div class="metric"><p class="metric-label">5k time trial</p><p class="metric-value">&lt;19:30</p><p class="metric-sub">From 18:42 base</p></div>
+  <div class="metric"><p class="metric-label">Long run</p><p class="metric-value">18–20km</p><p class="metric-sub">Comfortable Z1</p></div>
+  <div class="metric"><p class="metric-label">Cycling FTP</p><p class="metric-value">265W</p><p class="metric-sub">Up from 250W</p></div>
+  <div class="metric"><p class="metric-label">Back squat</p><p class="metric-value">136kg</p><p class="metric-sub">3×3 @85% — maintain</p></div>
+  <div class="metric"><p class="metric-label">Threshold pace</p><p class="metric-value">4:12–4:15/km</p><p class="metric-sub">Sustained 20+ min · consistent with a 19:30 5k (4:00 is a 2027 goal)</p></div>
+</div>
+</div>
+
+<script>
+// ── PLAN DATA ────────────────────────────────────────────────────────────────
+const PLAN = {
+  p1: { label:'Phase 1 — Rebuild', weeks:[
+    { n:1, focus:'<strong>Week 1 — Ease back in.</strong> First week back to structure. Keep everything conversational. Don\'t chase paces.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest or 20 min: hip flexor stretch, foam roll quads/hamstrings, shoulder circles.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run',d:'7km @ Z1 (5:20–5:40/km). Pure easy. Settle back into the rhythm.',b:'b-run'},
+      {n:'Wed',s:'Strength A — intro',d:'Back squat 3×5 @65% (~105kg). RDL 3×6 @75kg. Push press 3×5 @65kg. Pull-ups 3×5 BW. Split squat 2×8 BW. Hollow hold 3×30s.',b:'b-str'},
+      {n:'Thu',s:'Easy ride',d:'40 min easy spin @ 60–65% FTP (~150–163W). Legs moving, nothing more.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Threshold intro',d:'2km E + 2× 8min @ 4:20–4:30/km + 2km E. 3min jog between. Short blocks to re-establish the feeling.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'11km @ Z1. No targets, just time on feet.',b:'b-run'}
+    ]},
+    { n:2, focus:'<strong>Week 2 — Build the habit.</strong> Add a little volume. Strides on Tuesday to wake up leg turnover.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest or mobility work. Focus on hip flexors and ankles.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run + strides',d:'8km @ Z1 (5:15–5:35/km) + 6× 20s strides (fast, relaxed, full recovery). Strides should feel effortless.',b:'b-run'},
+      {n:'Wed',s:'Strength A',d:'Back squat 3×5 @70% (112kg). RDL 3×6 @80kg. Push press 3×5 @70kg. Pull-ups 3×6 BW. Split squat 2×8 BW. Hollow hold 3×40s. Side plank 3×30s/side.',b:'b-str'},
+      {n:'Thu',s:'Easy ride or jog',d:'45 min easy @ 65% FTP (~163W), or 7km easy jog if no bike access.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest. Protect Saturday quality.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Threshold run',d:'2km E + 2× 10min @ 4:25–4:30/km + 2km E. 3min jog between. Aim for even splits across each block.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'12km @ Z1. Hills welcome if the legs feel good — Pyrford, Send.',b:'b-run'}
+    ]},
+    { n:3, focus:'<strong>Week 3 — Consolidate.</strong> Threshold blocks get longer. Introduce HIIT B as an optional second session.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest or 20 min mobility.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run + strides',d:'9km @ Z1 + 6× 20s strides. Begin to find your rhythm — this should feel easy throughout.',b:'b-run'},
+      {n:'Wed',s:'Strength A',d:'Back squat 3×5 @70% (112kg). RDL 3×6 @85kg. Push press 3×5 @72kg. Lat pulldown 3×8. Split squat 2×8 light DB. Core circuit 3 rounds.',b:'b-str'},
+      {n:'Thu',s:'HIIT B (optional)',d:'KB swings 4×15. Box jumps 3×5. Goblet squat 3×10 @20kg. Push-ups 3×12. Renegade rows 3×8/side. Farmer carry 3×30m. Skip if legs still heavy from Wed.',b:'b-hit'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Threshold run',d:'2km E + 2× 12min @ 4:25–4:30/km + 2km E. 3min jog between. Longer than W2 — trust the pace.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'13km @ Z1. Explore a new route — Wisley, Ripley loop.',b:'b-run'}
+    ]},
+    { n:4, focus:'<strong>Week 4 — Deload.</strong> Volume drops ~30%. Keep intensity moderate. Let the body absorb the first three weeks. No heroics.', deload:true, days:[
+      {n:'Mon',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run',d:'6km @ Z1. Short and easy. No strides this week.',b:'b-run'},
+      {n:'Wed',s:'Strength A — light',d:'Back squat 2×4 @65% (105kg). RDL 2×5 @75kg. Push press 2×4 @65kg. Pull-ups 2×5 BW. 35 min max.',b:'b-str'},
+      {n:'Thu',s:'Easy ride',d:'30 min easy spin @ 60% FTP (~150W). Flush the legs.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Steady run',d:'2km E + 1× 10min @ 4:20/km + 2km E. One block only. Remind the legs what tempo feels like.',b:'b-run'},
+      {n:'Sun',s:'Easy run',d:'10km @ Z1. Conversational pace. End the week fresh.',b:'b-run'}
+    ]}
+  ]},
+  p2: { label:'Phase 2 — Build', weeks:[
+    { n:5, focus:'<strong>Week 5 — Re-engage.</strong> Into Phase 2. Two quality sessions per week. Tuesday threshold, Saturday quality ride or intervals. Strength loads start climbing.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest or mobility. Hip flexors, calves, thoracic rotation.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Threshold run',d:'2km E + 2× 12min @ 4:25–4:30/km + 2km E. 3min jog between. This moves to Tuesday now — a key session every week.',b:'b-key'},
+      {n:'Wed',s:'Strength A',d:'Back squat 3×5 @72% (116kg). RDL 3×6 @90kg. Push press 3×5 @72kg. Pull-ups 3×6 +5kg. Split squat 2×8 @10kg DB. Core 3 rounds.',b:'b-str'},
+      {n:'Thu',s:'Easy run',d:'8km @ Z1. Recovery run — don\'t drift above Z1 after Tuesday\'s threshold.',b:'b-run'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Sweet spot ride',d:'Warm up 10min + 2× 15min @ 88–93% FTP (220–232W) + 10min cool down. First structured bike quality session. Focus on smooth pedalling, 85–95rpm.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'14km @ Z1 (5:30–5:50/km). Steady and relaxed — legs may be tired from Saturday ride.',b:'b-run'}
+    ]},
+    { n:6, focus:'<strong>Week 6 — Load increases.</strong> Threshold blocks extend. Sweet spot time goes up. Introduce VO2 running on alternating Saturdays.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Threshold run',d:'2km E + 2× 14min @ 4:25–4:30/km + 2km E. 3min jog between. Even pace — the second block should match the first.',b:'b-key'},
+      {n:'Wed',s:'Strength B — HIIT',d:'KB swings 4×15. Box jumps 3×5. Goblet squat 3×10 @24kg. Archer push-ups 3×10/side. Renegade rows 3×8/side. Farmer carry 3×30m @24kg/hand.',b:'b-hit'},
+      {n:'Thu',s:'Easy run + drills',d:'9km @ Z1 + 4× running drills (high knees, A-skip, B-skip, ankling). Drills improve mechanics without adding load.',b:'b-run'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'VO2max intervals',d:'2km E + 5× 800m @ 3:55–4:05/km (~3:08–3:16/rep) + 3min jog recovery + 2km E. First VO2 session — track preferred. ~94–98s/lap, even. Not a sprint.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'15km @ Z1. Keep the first half genuinely easy.',b:'b-run'}
+    ]},
+    { n:7, focus:'<strong>Week 7 — Track week (one-off swap).</strong> Running threshold becomes 3 blocks for the first time. Saturday sweet spot ride swaps for a track ladder; Sunday long run becomes an easy long ride. One-off — review at next check-in before repeating.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Threshold run — 3 blocks',d:'2km E + 3× 8min @ 4:22–4:28/km + 2km E. 2min jog between. Three shorter blocks build the same time-at-threshold with better quality control.',b:'b-key'},
+      {n:'Wed',s:'Strength A',d:'Back squat 3×4 @75% (120kg). RDL 3×6 @92kg. Push press 3×5 @75kg. Pull-ups 3×6 +7.5kg. Split squat 2×8 @12kg. Core 3 rounds.',b:'b-str'},
+      {n:'Thu',s:'Easy ride',d:'50 min easy spin @ 65–70% FTP (~163–175W). Active recovery — keep cadence 85–95rpm.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Track ladder (one-off swap)',d:'2km E + 1200m @ 4:05 / 1000m @ 4:00 / 800m @ 3:52 / 600m @ 3:44 / 400m @ 3:35 per km + equal-time JOG recoveries + 2km E. ~4km hard. Sleep rule: only run the 1200 opener on a well-slept week — if Thu/Fri sleep is short, start at the 1000 (four rungs, ~2.8km hard) and let Sunday\'s ride carry the volume.',b:'b-key'},
+      {n:'Sun',s:'Long easy ride (one-off swap)',d:'2.5–3hrs @ Z2 (65–75% FTP, ~163–187W). Replaces the 16km long run this week only. Genuinely easy — the ladder was the work. Fuel properly for a ride this length.',b:'b-ride'}
+    ]},
+    { n:8, focus:'<strong>Week 8 — Deload + FTP test + HRmax test.</strong> Mid-build recovery. Volume drops ~30%. One short threshold session. Strength light. FTP test on Thursday to re-anchor bike zones; hill max test on Saturday to anchor HR zones for the first time.', deload:true, days:[
+      {n:'Mon',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run + strides',d:'7km @ Z1 + 6× 20s strides. Light and loose.',b:'b-run'},
+      {n:'Wed',s:'Strength A — light',d:'Back squat 2×4 @68% (108kg). RDL 2×5 @80kg. Push press 2×4 @68kg. Pull-ups 2×5. Core only. 35 min max.',b:'b-str'},
+      {n:'Thu',s:'Easy ride',d:'FTP TEST. 15min warm up + 20min max effort (or ramp test) + 10min cool down. Re-anchors all bike power targets — current wattages assume FTP 250, self-estimate is ~270. Set new zones off the result.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Short threshold run + HRmax test',d:'2km E + 1× 15min @ 4:20–4:25/km + 2km E. One single sustained block — benchmark how threshold feels after 7 weeks. Then, after 5min easy jog, ONE hard uphill effort: 3min building to all-out, sprint the last 30s. Record peak HR (Myzone strap only) — this anchors every HR zone in the plan.',b:'b-key'},
+      {n:'Sun',s:'Easy run',d:'10km @ Z1. End the week relaxed and ready for the second half of Phase 2.',b:'b-run'}
+    ]},
+    { n:9, focus:'<strong>Week 9 — Second build block begins.</strong> Threshold extends to 2×15min. VO2 goes WEEKLY from here. Key change: reps get LONGER, not faster — the stimulus is minutes accumulated near VO2max, and uptake takes 90–120s to arrive.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest. Prioritise sleep this week — second build block demands it.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Threshold run',d:'2km E + 2× 15min @ 4:20–4:26/km + 2km E. 3min jog between. Benchmark: can you hold even splits across both blocks?',b:'b-key'},
+      {n:'Wed',s:'Strength A',d:'Back squat 3×4 @78% (124kg). RDL capped 3×5 @95kg. Push press 3×4 @78kg. Pull-ups 3×6 +10kg. NO split squats (VO2 week — protect the hip flexors). Core 3 rounds.',b:'b-str'},
+      {n:'Thu',s:'Easy run + drills',d:'9km @ Z1 + 4× running drills. Relax into the pace.',b:'b-run'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'VO2max intervals — 5× 1km',d:'2km E + 5× 1km @ 3:55–4:00/km + 2:30 JOG recovery + 2km E. Reps lengthened from 800m so each one actually reaches VO2max. Discipline session: do NOT run 3:45s — a faster rep gives you LESS time at VO2max, not more. Prime before rep 1 (strides, start within 90s). Jog every recovery at 6:30–7:00/km. Target ~12–14min of quality. Track preferred.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'16km @ Z1. First long run back at full length after deload.',b:'b-run'}
+    ]},
+    { n:10, focus:'<strong>Week 10 — Specificity up.</strong> The 5k is the priority signal: VO2 running stays on Saturday, sweet spot ride moves to Wednesday (replacing HIIT B), and the first goal-pace touches appear on Thursday.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Threshold run',d:'2km E + 3× 10min @ 4:18–4:24/km + 90s jog between + 2km E. Three blocks at slightly sharper pace. If block 2 fades like Week 6 did, ease to 4:25 and hold form.',b:'b-key'},
+      {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 20min @ 88–93% FTP (adjust to Week 8 test result) + 10min cool down. Bike quality lives here now — low-impact, won\'t cost Saturday.',b:'b-ride'},
+      {n:'Thu',s:'Easy run + goal-pace 400s',d:'8km @ Z1 + 5× 400m @ goal pace 3:54/km (~94s/rep) + 75–90s jog. A neuromuscular race-pace touch, not a workout — should finish feeling sharp, not tired.',b:'b-run'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'VO2max intervals — 1km reps',d:'2km E + 5× 1km @ 3:58–4:05/km + 2:30 jog recovery + 2km E. Longer reps at controlled VO2 pace. Even splits — rep 5 should match rep 1.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'17km @ Z1. If you\'re missing the Surrey Hills, a 55–65km endurance ride can replace ONE Sunday long run this phase — but only one.',b:'b-run'}
+    ]},
+    { n:11, focus:'<strong>Week 11 — Peak load week.</strong> Highest threshold volume of the plan, anchored to current fitness rather than the schedule. VO2 reps land exactly on goal pace. Long run reaches 18km.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest. This is the biggest week — protect the recovery around it.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Threshold run — peak',d:'2km E + 2× 16min @ 4:18–4:24/km + 2km E. 3min jog between. Start conservative, negative split if it\'s there.',b:'b-key'},
+      {n:'Wed',s:'Strength A — heavy',d:'Back squat 3×4 @80% (128kg). RDL capped 3×5 @100kg. Push press 3×4 @80kg. Pull-ups 3×6 +12.5kg. NO split squats (VO2 week). Core 3 rounds.',b:'b-str'},
+      {n:'Thu',s:'Easy ride',d:'50 min easy @ 65% FTP. Flush the legs — fitness work, not fatigue work.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest. Don\'t be tempted to add anything here.',b:'b-rst',rest:true},
+      {n:'Sat',s:'VO2max — at goal pace',d:'2km E + 4× 1km @ 3:54–4:00/km + 2:30 jog recovery + 2km E. Reps sit exactly on race pace — learn what 3:54/km feels like on tiring legs. Track preferred. Even splits over heroics.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'18km @ Z1. First 18km of the summer. Flat route — don\'t add hills this week.',b:'b-run'}
+    ]},
+    { n:12, focus:'<strong>Week 12 — Deload + Parkrun validation.</strong> After the biggest week, a full deload before Phase 3. Saturday Parkrun 5K sets the real VDOT for Phase 3 pacing. Let the adaptation land.', deload:true, days:[
+      {n:'Mon',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run',d:'6km @ Z1. Shakeout only. No strides, no pressure.',b:'b-run'},
+      {n:'Wed',s:'Strength A — very light',d:'Back squat 2×3 @65% (105kg). RDL 2×4 @75kg. Push press 2×3 @65kg. Pull-ups 2×4 BW. Core only. 30 min max.',b:'b-str'},
+      {n:'Thu',s:'Easy ride',d:'30 min easy spin @ 55–60% FTP. Pure recovery.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'🏁 Parkrun 5K',d:'Parkrun 5K validation. Warm up 2km easy, then run Parkrun as a genuine 5K time trial. Target ~19:45–20:15 off current training. This re-anchors VDOT for all Phase 3 paces — and the finish-line HR is your best HRmax cross-check if the Week 8 hill test was inconclusive. Cool down 1–2km.',b:'b-run'},
+      {n:'Sun',s:'Easy run',d:'9km @ Z1. End the phase relaxed and ready.',b:'b-run'}
+    ]}
+  ]},
+  p3: { label:'Phase 3 — Sharpen', weeks:[
+    { n:13, focus:'<strong>Week 13 — Sharpen begins.</strong> Sustained continuous threshold replaces blocks. VO2 reps shorten and sharpen — the short recoveries do the priming work. Strength drops to maintenance only.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest. Into the final phase — protect recovery.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Continuous threshold',d:'2km E + 20min continuous @ 4:15–4:22/km + 2km E (re-anchor off Week 12 Parkrun). No splits — one sustained effort. The mental discipline is the point.',b:'b-key'},
+      {n:'Wed',s:'Maintenance strength',d:'Back squat 3×3 @82% (131kg). Clean pull 3×2 @80kg. Push press 3×3 @80kg. Pull-ups 3×5 +10kg. Core 2 rounds. 40 min max.',b:'b-str'},
+      {n:'Thu',s:'Easy run + strides',d:'8km @ Z1 + 6× 20s strides. Strides feel sharper at this stage — good sign.',b:'b-run'},
+      {n:'Fri',s:'Rest',d:'Full rest. Protect Saturday quality.',b:'b-rst',rest:true},
+      {n:'Sat',s:'VO2max — short and sharp',d:'2km E + 6× 600m @ 3:48–3:55/km + 90s jog recovery + 2km E. Reps are under 3min here by design — the SHORT recovery is what keeps VO2 elevated across the set, so the jog is non-negotiable. Sharp but controlled: aerobic speed, not a sprint session.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'17km @ Z1. Slight volume reduction from Phase 2 peak — the work is in quality now.',b:'b-run'}
+    ]},
+    { n:14, focus:'<strong>Week 14 — Race simulation.</strong> Saturday becomes a mixed-pace run simulating race conditions. Sweet spot ride returns mid-week.', deload:false, days:[
+      {n:'Mon',s:'Rest / mobility',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Continuous threshold — extended',d:'2km E + 23min continuous @ 4:12–4:20/km + 2km E (re-anchor off Week 12 Parkrun). The last 5 minutes will feel like race conditions.',b:'b-key'},
+      {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 20min @ 90–95% FTP (225–237W) + 10min cool down. Slightly higher intensity than Phase 2 — lifting the ceiling before taper.',b:'b-ride'},
+      {n:'Thu',s:'Easy run',d:'8km @ Z1. Legs may be heavy after Tuesday and Wednesday — keep genuinely easy.',b:'b-run'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Race simulation run',d:'2km E + 10min @ threshold (parkrun-anchored, ~4:15–4:20/km) + 5min @ goal pace 3:54/km + 5min back @ threshold + 2km E. Teaches goal-pace running under fatigue — the exact skill of km 3–4 on race day.',b:'b-key'},
+      {n:'Sun',s:'Long easy run',d:'16km @ Z1. Steady and controlled — last long run before the taper.',b:'b-run'}
+    ]},
+    { n:15, focus:'<strong>Week 15 — Taper.</strong> Volume drops significantly. Intensity stays — one sharp quality session. Trust the work.', deload:true, days:[
+      {n:'Mon',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run + strides',d:'6km @ Z1 + 6× 20s strides. Light and sharp.',b:'b-run'},
+      {n:'Wed',s:'Maintenance strength',d:'Back squat 2×3 @80% (128kg). Clean pull 2×2 @75kg. Push press 2×3 @75kg. Pull-ups 2×4. Core only. 30 min max.',b:'b-str'},
+      {n:'Thu',s:'Easy ride or short run',d:'30 min easy ride @ 60% FTP, or 5km easy jog.',b:'b-ride'},
+      {n:'Fri',s:'Rest',d:'Full rest. Legs should feel almost restless — that\'s the taper working.',b:'b-rst',rest:true},
+      {n:'Sat',s:'Sharpener',d:'2km E + 3× 1km @ 3:52–3:58/km + 2min jog recovery + 2km E. Short, fast, controlled — goal pace should feel comfortable here. Primes the neuromuscular system.',b:'b-key'},
+      {n:'Sun',s:'Easy run',d:'8km @ Z1. Final long-ish run before benchmark week.',b:'b-run'}
+    ]},
+    { n:16, focus:'<strong>Week 16 — Benchmark week.</strong> 5k or 10k time trial. Everything this summer has been building to this. Trust the training. Start slightly conservative.', deload:false, days:[
+      {n:'Mon',s:'Rest',d:'Full rest. Final week — protect everything.',b:'b-rst',rest:true},
+      {n:'Tue',s:'Easy run + strides',d:'5km very easy + 4× 20s strides. Keep it short. Legs should feel good.',b:'b-run'},
+      {n:'Wed',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Thu',s:'Easy jog + strides',d:'3km shakeout + 4× 20s strides. Very short. Just keeping the legs loose.',b:'b-run'},
+      {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
+      {n:'Sat',s:'🏁 5k / 10k Benchmark',d:'5k target: sub-19:30 (3:54/km). 10k target: sub-41:00 (4:06/km). Warm up 2km easy. Start at target pace. Negative split if possible.',b:'b-key'},
+      {n:'Sun',s:'Recovery walk or rest',d:'Easy 20–30 min walk or full rest. You\'ve earned it.',b:'b-rst',rest:true}
+    ]}
+  ]}
+};
+
+// ── Button icons — inline SVG so they work offline and inherit button colour ──
+const SVG = (p) => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" `
+  + `stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICONS = {
+  done : SVG('<path d="M20 6 9 17l-5-5"/>'),
+  skip : SVG('<path d="M18 6 6 18M6 6l12 12"/>'),
+  notes: SVG('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8.5 3v18M12 9.5h4.5M12 14.5h4.5"/>'),
+  intent: '<span class="emoji" aria-hidden="true">🎯</span>'
+};
+const tbtnInner = (icon, label) => `${ICONS[icon]}<span class="lbl">${label}</span>`;
+
+const BADGE_LABELS = {'b-key':'Key session','b-run':'Run','b-ride':'Ride','b-str':'Strength','b-hit':'HIIT','b-rst':'Rest'};
+const ENERGY_EMOJIS = ['','😴','😕','😐','🙂','⚡'];
+const ENERGY_LABELS = ['','Exhausted','Low','OK','Good','Great'];
+
+// ── SESSION INTENT ───────────────────────────────────────────────────────────
+// Every session has ONE target variable. Everything else is a constraint held
+// constant so that the target variable means something.
+const INTENT = {
+  thr:{
+    t:'Threshold',
+    aim:'Raise the pace you can sustain at maximal lactate steady state.',
+    tv:'Minutes accumulated at threshold pace.',
+    con:'Pace band held tightly. Recoveries short (90s–3min). The last block must match the first.',
+    exe:'Start block 1 at the SLOW end of the band. The first 3 minutes of every block should feel too easy. Even splits — resist the urge to negative-split off a hot opener.',
+    win:'You finish feeling you could have run one more block.',
+    fail:'Running 5–8s/km fast. Converts a repeatable weekly session into a hard tempo you pay for on Thursday.'
+  },
+  vo2:{
+    t:'VO2max',
+    aim:'Accumulate time with oxygen uptake at or near maximum.',
+    tv:'Minutes spent at ≥90% VO2max — target 12–15min of quality.',
+    con:'Reps long enough to get there (≥3min, or shorter reps with SHORT jogged recoveries). Recovery jogged, never standing.',
+    exe:'Prime before rep 1: strides, then start within 90s — never let HR fall to baseline before the opener. Run reps at the SLOW end of the band. Jog recoveries at 6:30–7:00/km, continuous.',
+    win:'Reps 4–6 feel harder than reps 1–2 at identical pace. Cadence holds.',
+    fail:'Short fast reps with long rest — an anaerobic session wearing a VO2 costume. A faster rep gives you LESS time at VO2max, not more.'
+  },
+  gp:{
+    t:'Goal-pace touch',
+    aim:'Neuromuscular and psychological familiarity with 3:54/km.',
+    tv:'Quality of movement at race pace.',
+    con:'Short enough that pace never degrades. This is not a workout.',
+    exe:'Full easy run first, then the reps. Relaxed shoulders, quick feet. Stop the set the moment form starts to go.',
+    win:'3:54 feels rhythmic rather than strained. You finish sharp, not tired.',
+    fail:'Treating it as an interval session and arriving at Saturday already fatigued.'
+  },
+  easy:{
+    t:'Easy / long',
+    aim:'Aerobic development at the lowest possible recovery cost.',
+    tv:'Volume completed without compromising the next quality session.',
+    con:'Effort strictly conversational throughout. No exceptions for feeling good.',
+    exe:'If in doubt, slower. Your Z1 discipline is already a genuine asset — protect it.',
+    win:'Tuesday and Saturday are unaffected.',
+    fail:'Drifting to 5:10/km because the legs feel decent, then paying for it two days later.'
+  },
+  race:{
+    t:'Time trial / benchmark',
+    aim:'Measure current fitness and re-anchor every pace in the plan.',
+    tv:'An honest, evenly-paced result.',
+    con:'Warm up properly. Start AT target pace, not above it.',
+    exe:'First km at or just under target — never faster. Negative split if it is there. Record finish HR (strap) for the HRmax cross-check.',
+    win:'Km 5 is your fastest.',
+    fail:'A hot opening km. Costs more in the back half than it ever buys up front.'
+  },
+  ftp:{
+    t:'FTP test',
+    aim:'Set accurate bike power zones for the rest of the plan.',
+    tv:'A repeatable, honestly-paced maximal effort.',
+    con:'Same protocol every time so results stay comparable.',
+    exe:'Warm up thoroughly. Pick a power you believe you can hold and settle there within the first 2 minutes — do not surge. The last 3 minutes are where you empty it.',
+    win:'Power is flat across the 20min, with a lift at the end.',
+    fail:'Starting 20W too high, fading badly, and setting zones off a broken effort.'
+  },
+  ss:{
+    t:'Sweet spot ride',
+    aim:'Aerobic and threshold development with near-zero impact cost.',
+    tv:'Time in the power band.',
+    con:'Power, not speed. Terrain and traffic make it lumpy — average over 30–60s, not instantaneously.',
+    exe:'Cadence 85–95rpm. Pick the flattest, least interrupted route you have. Smooth beats punchy.',
+    win:'Legs are fresh enough for Saturday running.',
+    fail:'Chasing segments and turning a sweet spot ride into a race.'
+  },
+  str:{
+    t:'Strength',
+    aim:'Maintain force production and durability without stealing from running.',
+    tv:'Quality reps at the prescribed load.',
+    con:'Loads and volume capped in VO2 weeks. Heavy posterior chain work stays ≥48h from quality running.',
+    exe:'If it lands on a run day, run FIRST. Stop a set early rather than grinding a poor rep. Drop split squats entirely in VO2 weeks.',
+    win:'No hip flexor or hamstring DOMS on Saturday morning.',
+    fail:'Adding load because it felt easy, then arriving at Saturday with heavy legs.'
+  },
+  ride:{
+    t:'Easy ride',
+    aim:'Blood flow and aerobic volume with no fatigue cost.',
+    tv:'Time with the legs turning over.',
+    con:'Stay genuinely easy. This is recovery work.',
+    exe:'Cadence 85–95rpm, low torque. Flat route.',
+    win:'You feel better afterwards than before.',
+    fail:'Letting it become a tempo ride because the road tilted up.'
+  }
+};
+
+function inferIntent(day){
+  if(day.rest)return null;
+  const s=day.s||'', d=day.d||'';
+  if(/FTP TEST/i.test(d))return 'ftp';
+  if(/Parkrun|Benchmark|Race simulation/i.test(s))return 'race';
+  if(/VO2|Track ladder|Sharpener/i.test(s))return 'vo2';
+  if(/Threshold|Steady run/i.test(s))return 'thr';
+  if(/goal-pace/i.test(s))return 'gp';
+  if(day.b==='b-str'||day.b==='b-hit')return 'str';
+  if(day.b==='b-ride')return /Sweet spot/i.test(s)?'ss':'ride';
+  if(day.b==='b-run'||day.b==='b-key')return 'easy';
+  return null;
+}
+
+function intentHTML(key){
+  const i=INTENT[key];
+  if(!i)return '';
+  const row=(lbl,txt,cls)=>`<div class="intent-row${cls?' '+cls:''}"><span class="intent-lbl">${lbl}</span><span class="intent-txt">${txt}</span></div>`;
+  return `<div class="intent-hd">🎯 ${i.t} — session intent</div>`+
+    row('Aim',i.aim)+
+    row('Target variable',i.tv)+
+    row('Constraints',i.con)+
+    row('Execution',i.exe)+
+    row('Success looks like',i.win)+
+    row('Failure mode',i.fail,'fail');
+}
+
+function toggleIntent(dKey){
+  const el=document.getElementById('in_'+dKey);
+  if(!el)return;
+  const open=el.classList.toggle('vis');
+  const b=document.getElementById('ib_'+dKey);
+  if(b){b.classList.toggle('is-open',open);b.setAttribute('aria-expanded',open?'true':'false');}
+}
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+function sv(k,v){try{localStorage.setItem('csr_'+k,JSON.stringify(v));}catch(e){}}
+function ld(k,d){try{const v=localStorage.getItem('csr_'+k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
+
+// ── Phase switching ───────────────────────────────────────────────────────────
+function showPhase(id,btn){
+  document.querySelectorAll('.phase-panel').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.phase-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Week switching ────────────────────────────────────────────────────────────
+function showWeek(phaseId,wNum){
+  const phase=PLAN[phaseId];
+  phase.weeks.forEach(w=>{
+    const wp=document.getElementById('wp_'+phaseId+'_'+w.n);
+    const wt=document.getElementById('wt_'+phaseId+'_'+w.n);
+    if(wp)wp.classList.remove('active');
+    if(wt)wt.classList.remove('active');
+  });
+  const wp=document.getElementById('wp_'+phaseId+'_'+wNum);
+  const wt=document.getElementById('wt_'+phaseId+'_'+wNum);
+  if(wp)wp.classList.add('active');
+  if(wt)wt.classList.add('active');
+}
+
+// ── Build UI ──────────────────────────────────────────────────────────────────
+function buildPhase(phaseId){
+  const phase=PLAN[phaseId];
+  const tabsEl=document.getElementById(phaseId+'-tabs');
+  const weeksEl=document.getElementById(phaseId+'-weeks');
+
+  phase.weeks.forEach((week,wi)=>{
+    const wKey=phaseId+'_'+week.n;
+
+    // Tab
+    const tab=document.createElement('button');
+    tab.className='week-tab'+(wi===0?' active':'');
+    tab.id='wt_'+wKey;
+    tab.textContent='Week '+week.n+(week.deload?' ↓':'');
+    tab.onclick=()=>showWeek(phaseId,week.n);
+    tabsEl.appendChild(tab);
+
+    // Week panel
+    const wp=document.createElement('div');
+    wp.className='week-panel'+(wi===0?' active':'');
+    wp.id='wp_'+wKey;
+
+    if(week.deload){
+      const b=document.createElement('div');
+      b.className='deload-banner';
+      b.textContent='⬇ Deload week — volume reduces ~30%. Planned recovery. Do not add sessions.';
+      wp.appendChild(b);
+    }
+
+    const fc=document.createElement('div');
+    fc.className='week-focus';
+    fc.innerHTML=week.focus;
+    wp.appendChild(fc);
+
+    const sm=document.createElement('div');
+    sm.className='week-summary';
+    sm.id='sm_'+wKey;
+    wp.appendChild(sm);
+
+    const grid=document.createElement('div');
+    grid.className='day-grid';
+
+    week.days.forEach((day,di)=>{
+      const dKey=wKey+'_d'+di;
+      const status=ld(dKey+'_status','pending');
+      const notes=ld(dKey+'_notes','');
+      const sleepV=ld(dKey+'_sleep','');
+      const energyV=ld(dKey+'_energy',0);
+      const iKey=inferIntent(day);
+
+      const dc=document.createElement('div');
+      dc.id='dc_'+dKey;
+      dc.className='day-card'+(day.rest?' rest-bg':'')+(status==='done'?' done-card':status==='skipped'?' skip-card':'');
+
+      const eBtns=ENERGY_EMOJIS.slice(1).map((e,i)=>`<button class="ebtn${energyV===i+1?' active':''}" id="eb_${dKey}_${i+1}" title="${ENERGY_LABELS[i+1]}" onclick="setEnergy('${dKey}','${wKey}','${phaseId}',${i+1})">${e}</button>`).join('');
+
+      // Key sessions show intent expanded by default; everything else collapsed.
+      const iOpen=iKey&&day.b==='b-key';
+      const iBtn=iKey?`<button class="tbtn tbtn-intent${iOpen?' is-open':''}" id="ib_${dKey}" aria-expanded="${iOpen?'true':'false'}" onclick="toggleIntent('${dKey}')">${tbtnInner('intent','Intent')}</button>`:'';
+      const iPanel=iKey?`<div class="intent${iOpen?' vis':''}" id="in_${dKey}">${intentHTML(iKey)}</div>`:'';
+
+      dc.innerHTML=`
+        <span class="day-name">${day.n}</span>
+        <span class="session-name">${day.s}</span>
+        <span class="session-detail">${day.d}</span>
+        <span class="badge ${day.b}">${BADGE_LABELS[day.b]||'Rest'}</span>
+        <div class="ctrl-row">
+          ${iBtn}
+          <button class="tbtn tbtn-done${status==='done'?' is-done':''}" id="db_${dKey}" onclick="setStatus('${dKey}','${wKey}','${phaseId}','done')">${tbtnInner('done',status==='done'?'Done':'Mark done')}</button>
+          <button class="tbtn tbtn-skip${status==='skipped'?' is-skip':''}" id="sb_${dKey}" onclick="setStatus('${dKey}','${wKey}','${phaseId}','skipped')">${tbtnInner('skip',status==='skipped'?'Skipped':'Skip')}</button>
+          <button class="tbtn tbtn-notes${notes?' is-open':''}" id="nb_${dKey}" aria-expanded="${notes?'true':'false'}" onclick="toggleNote('${dKey}')">${tbtnInner('notes','Notes')}</button>
+        </div>
+        ${iPanel}
+        <div class="sleep-row">
+          <span class="slabel">😴</span>
+          <input class="sinput" type="number" min="3" max="12" step="0.5" placeholder="hrs" value="${sleepV}" id="si_${dKey}" onchange="saveSleep('${dKey}','${wKey}','${phaseId}')" title="Hours slept"/>
+          <span class="slabel" style="margin-left:3px">Energy</span>
+          ${eBtns}
+        </div>
+        <textarea class="ntxt${notes?' vis':''}" id="nt_${dKey}" placeholder="Notes…" onchange="saveNote('${dKey}')">${notes}</textarea>
+      `;
+      grid.appendChild(dc);
+    });
+    wp.appendChild(grid);
+
+    // Week note + export
+    const wNote=ld(wKey+'_note','');
+    const wn=document.createElement('div');
+    wn.className='wnote-wrap';
+    wn.innerHTML=`
+      <div class="wnote-hdr">
+        <span class="wnote-lbl">Week notes / Sunday check-in</span>
+        <button class="exp-btn" onclick="exportWeek('${wKey}','${phaseId}',${week.n})">📋 Export for check-in</button>
+        <button class="clr-btn" onclick="clearWeek('${wKey}','${phaseId}',${week.n})">Reset week</button>
+      </div>
+      <textarea class="wnote" id="wn_${wKey}" placeholder="How did the week go? Notes for Monday check-in…" onchange="saveWNote('${wKey}')">${wNote}</textarea>
+      <div id="exp_${wKey}" class="exp-out">
+        <div class="exp-hdr">
+          <span class="exp-lbl">Copy and paste into Claude ↓</span>
+          <button class="copy-btn" onclick="copyExport('${wKey}')">Copy</button>
+        </div>
+        <textarea class="exp-txt" id="et_${wKey}" readonly></textarea>
+      </div>
+    `;
+    wp.appendChild(wn);
+    weeksEl.appendChild(wp);
+    updateSummary(wKey,phaseId,wi);
+  });
+}
+
+// ── Status ────────────────────────────────────────────────────────────────────
+function setStatus(dKey,wKey,phaseId,val){
+  const cur=ld(dKey+'_status','pending');
+  const ns=cur===val?'pending':val;
+  sv(dKey+'_status',ns);
+  const dc=document.getElementById('dc_'+dKey);
+  dc.classList.remove('done-card','skip-card');
+  if(ns==='done')dc.classList.add('done-card');
+  if(ns==='skipped')dc.classList.add('skip-card');
+  const db=document.getElementById('db_'+dKey);
+  const sb=document.getElementById('sb_'+dKey);
+  db.innerHTML=tbtnInner('done',ns==='done'?'Done':'Mark done');
+  db.className='tbtn tbtn-done'+(ns==='done'?' is-done':'');
+  sb.innerHTML=tbtnInner('skip',ns==='skipped'?'Skipped':'Skip');
+  sb.className='tbtn tbtn-skip'+(ns==='skipped'?' is-skip':'');
+  const wi=PLAN[phaseId].weeks.findIndex(w=>wKey===phaseId+'_'+w.n);
+  updateSummary(wKey,phaseId,wi);
+}
+
+// ── Sleep / energy ────────────────────────────────────────────────────────────
+function saveSleep(dKey,wKey,phaseId){
+  sv(dKey+'_sleep',document.getElementById('si_'+dKey).value);
+  const wi=PLAN[phaseId].weeks.findIndex(w=>wKey===phaseId+'_'+w.n);
+  updateSummary(wKey,phaseId,wi);
+}
+function setEnergy(dKey,wKey,phaseId,val){
+  const cur=ld(dKey+'_energy',0);
+  const ns=cur===val?0:val;
+  sv(dKey+'_energy',ns);
+  for(let i=1;i<=5;i++){const b=document.getElementById('eb_'+dKey+'_'+i);if(b)b.classList.toggle('active',i===ns);}
+  const wi=PLAN[phaseId].weeks.findIndex(w=>wKey===phaseId+'_'+w.n);
+  updateSummary(wKey,phaseId,wi);
+}
+
+// ── Notes ─────────────────────────────────────────────────────────────────────
+function toggleNote(dKey){
+  const el=document.getElementById('nt_'+dKey);
+  const open=el.classList.toggle('vis');
+  const b=document.getElementById('nb_'+dKey);
+  if(b){b.classList.toggle('is-open',open);b.setAttribute('aria-expanded',open?'true':'false');}
+  if(open)el.focus();
+}
+function saveNote(dKey){sv(dKey+'_notes',document.getElementById('nt_'+dKey).value);}
+function saveWNote(wKey){sv(wKey+'_note',document.getElementById('wn_'+wKey).value);}
+
+// ── Summary bar ───────────────────────────────────────────────────────────────
+function updateSummary(wKey,phaseId,wi){
+  const week=PLAN[phaseId].weeks[wi];
+  if(!week)return;
+  let done=0,skipped=0,slT=0,slC=0,enT=0,enC=0;
+  const nonRest=week.days.filter(d=>!d.rest);
+  week.days.forEach((day,di)=>{
+    const dKey=wKey+'_d'+di;
+    const s=ld(dKey+'_status','pending');
+    if(!day.rest){if(s==='done')done++;if(s==='skipped')skipped++;}
+    const sl=parseFloat(ld(dKey+'_sleep',''));
+    if(!isNaN(sl)&&sl>0){slT+=sl;slC++;}
+    const en=ld(dKey+'_energy',0);
+    if(en>0){enT+=en;enC++;}
+  });
+  const total=nonRest.length;
+  const pct=total>0?Math.round((done/total)*100):0;
+  const avgSl=slC>0?(slT/slC).toFixed(1):null;
+  const avgEn=enC>0?(enT/enC).toFixed(1):null;
+  const el=document.getElementById('sm_'+wKey);
+  if(el)el.innerHTML=
+    `<strong>${done}/${total}</strong> sessions completed &nbsp;·&nbsp; ${skipped} skipped `+
+    `<span class="pbar-wrap"><span class="pbar-fill" style="width:${pct}%"></span></span> <span style="margin-left:4px">${pct}%</span>`+
+    (avgSl?`&nbsp;·&nbsp; 😴 avg <strong>${avgSl}h</strong>`:'')+
+    (avgEn?`&nbsp;·&nbsp; Energy avg <strong>${avgEn}</strong> ${ENERGY_EMOJIS[Math.round(parseFloat(avgEn))]}` :'');
+  const tab=document.getElementById('wt_'+wKey);
+  if(tab)tab.classList.toggle('wdone',done===total&&total>0);
+}
+
+// ── Export ────────────────────────────────────────────────────────────────────
+function exportWeek(wKey,phaseId,wNum){
+  const wi=PLAN[phaseId].weeks.findIndex(w=>wKey===phaseId+'_'+w.n);
+  const week=PLAN[phaseId].weeks[wi];
+  const phase=PLAN[phaseId];
+  const sLabels={done:'✓ Done',skipped:'— Skipped',pending:'○ Pending'};
+  let lines=[];
+  lines.push('CARL SUMMER PLAN REFINED — WEEK '+wNum+' CHECK-IN');
+  lines.push(phase.label);
+  lines.push('Focus: '+week.focus.replace(/<[^>]+>/g,''));
+  lines.push('─'.repeat(48));
+  week.days.forEach((day,di)=>{
+    const dKey=wKey+'_d'+di;
+    const status=ld(dKey+'_status','pending');
+    const sleep=ld(dKey+'_sleep','');
+    const energy=ld(dKey+'_energy',0);
+    const notes=ld(dKey+'_notes','');
+    const iKey=inferIntent(day);
+    lines.push(`${day.n.toUpperCase()}  ${day.s}`);
+    if(iKey&&day.b==='b-key')lines.push(`  Intent: ${INTENT[iKey].t} — target variable: ${INTENT[iKey].tv}`);
+    lines.push(`  Status: ${sLabels[status]||'○ Pending'}  |  Sleep: ${sleep?sleep+'h':'—'}  |  Energy: ${energy?ENERGY_LABELS[energy]:'—'}`);
+    if(notes.trim())lines.push('  Notes: '+notes.trim());
+  });
+  lines.push('─'.repeat(48));
+  const wNote=ld(wKey+'_note','');
+  lines.push('Week notes:\n'+(wNote.trim()||'(none)'));
+  lines.push('─'.repeat(48));
+  const nonRest=week.days.filter(d=>!d.rest);
+  let done=0,skipped=0,slT=0,slC=0,enT=0,enC=0;
+  week.days.forEach((day,di)=>{
+    const dKey=wKey+'_d'+di;
+    const s=ld(dKey+'_status','pending');
+    if(!day.rest){if(s==='done')done++;if(s==='skipped')skipped++;}
+    const sl=parseFloat(ld(dKey+'_sleep',''));if(!isNaN(sl)&&sl>0){slT+=sl;slC++;}
+    const en=ld(dKey+'_energy',0);if(en>0){enT+=en;enC++;}
+  });
+  lines.push(`Sessions: ${done}/${nonRest.length} completed, ${skipped} skipped`);
+  if(slC>0)lines.push(`Avg sleep: ${(slT/slC).toFixed(1)}h/night`);
+  if(enC>0)lines.push(`Avg energy: ${(enT/enC).toFixed(1)}/5`);
+  const expEl=document.getElementById('exp_'+wKey);
+  const txtEl=document.getElementById('et_'+wKey);
+  txtEl.value=lines.join('\n');
+  expEl.style.display=expEl.style.display==='none'||expEl.style.display===''?'block':'none';
+}
+function copyExport(wKey){
+  const el=document.getElementById('et_'+wKey);
+  el.select();
+  try{navigator.clipboard.writeText(el.value);}catch(e){document.execCommand('copy');}
+  document.querySelectorAll('.copy-btn').forEach(b=>{b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy',2000);});
+}
+
+// ── Clear week ────────────────────────────────────────────────────────────────
+function clearWeek(wKey,phaseId,wNum){
+  if(!confirm('Reset all data for this week?'))return;
+  const wi=PLAN[phaseId].weeks.findIndex(w=>wKey===phaseId+'_'+w.n);
+  const week=PLAN[phaseId].weeks[wi];
+  week.days.forEach((day,di)=>{
+    const dKey=wKey+'_d'+di;
+    sv(dKey+'_status','pending');sv(dKey+'_notes','');sv(dKey+'_sleep','');sv(dKey+'_energy',0);
+    const dc=document.getElementById('dc_'+dKey);if(dc)dc.classList.remove('done-card','skip-card');
+    const db=document.getElementById('db_'+dKey);if(db){db.innerHTML=tbtnInner('done','Mark done');db.className='tbtn tbtn-done';}
+    const sb=document.getElementById('sb_'+dKey);if(sb){sb.innerHTML=tbtnInner('skip','Skip');sb.className='tbtn tbtn-skip';}
+    const nb=document.getElementById('nb_'+dKey);if(nb){nb.classList.remove('is-open');nb.setAttribute('aria-expanded','false');}
+    const nt=document.getElementById('nt_'+dKey);if(nt){nt.value='';nt.classList.remove('vis');}
+    const si=document.getElementById('si_'+dKey);if(si)si.value='';
+    for(let i=1;i<=5;i++){const eb=document.getElementById('eb_'+dKey+'_'+i);if(eb)eb.classList.remove('active');}
+  });
+  sv(wKey+'_note','');
+  const wn=document.getElementById('wn_'+wKey);if(wn)wn.value='';
+  const ex=document.getElementById('exp_'+wKey);if(ex)ex.style.display='none';
+  updateSummary(wKey,phaseId,wi);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildPhase('p1');
+buildPhase('p2');
+buildPhase('p3');
+
+// ── PWA: register service worker for offline use ─────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // Service worker unavailable (e.g. opened as file://) — app still works, just no offline caching
+    });
+  });
+}
+</script>
+</body>
+</html>
