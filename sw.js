@@ -1,7 +1,7 @@
 // Carl Summer Plan Refined — Service Worker
 // Caches the app shell so it works fully offline after first load.
 
-const CACHE_NAME = 'summer-plan-v4';
+const CACHE_NAME = 'summer-plan-v5';
 const ASSETS = [
   './',
   './index.html',
