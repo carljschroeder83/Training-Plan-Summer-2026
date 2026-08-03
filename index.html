@@ -146,8 +146,66 @@ h1{
   transition:background .15s,color .15s,border-color .15s;
   white-space:nowrap;
 }
+.week-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
+.week-tab .wt-date{font-size:var(--fs-xs);font-weight:500;color:var(--ink-3);margin-top:1px}
 .week-tab:hover{border-color:var(--ink-3);color:var(--ink)}
 .week-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.week-tab.active .wt-date{color:#bdbcb4}
+/* The live week is ringed even when you've tabbed away from it */
+.week-tab.is-now{box-shadow:0 0 0 2px var(--ink)}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TODAY BAR — the app answers "what am I doing today?" before you scroll
+   ═══════════════════════════════════════════════════════════════════════════ */
+.today-bar{
+  display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;
+  background:var(--ink);
+  color:#fff;
+  border-radius:var(--r-lg);
+  padding:var(--sp-4);
+  margin-bottom:var(--sp-5);
+  box-shadow:var(--shadow);
+}
+.tb-main{flex:1 1 220px;min-width:0}
+.tb-kicker{
+  display:block;
+  font-size:var(--fs-xs);font-weight:700;
+  text-transform:uppercase;letter-spacing:0.09em;
+  color:#a6a49b;
+  margin-bottom:2px;
+}
+.tb-session{display:block;font-size:var(--fs-md);font-weight:700;line-height:1.25}
+.tb-meta{display:block;font-size:var(--fs-sm);color:#bdbcb4;margin-top:2px}
+.tb-btn{
+  font-size:var(--fs-sm);font-weight:600;
+  min-height:var(--tap);padding:0 var(--sp-4);
+  border-radius:var(--r-sm);
+  border:1px solid #55544f;
+  background:transparent;color:#fff;
+  white-space:nowrap;
+}
+.tb-btn:hover{background:#2b2b2e;border-color:#8a8880}
+
+/* Week date range above the focus bar */
+.week-dates{
+  font-size:var(--fs-sm);font-weight:600;
+  color:var(--ink-3);
+  margin-bottom:var(--sp-2);
+  letter-spacing:0.01em;
+}
+.week-dates .live{color:var(--done);font-weight:700}
+
+/* Today's card — ringed, so the right session is obvious in a 7-card stack */
+.day-card.is-today{border-color:var(--ink);border-width:2px;padding:calc(var(--sp-4) - 1px) calc(var(--sp-4) - 1px) calc(var(--sp-4) - 1px) calc(var(--sp-4) + 5px)}
+.day-card.is-today.done-card{border-color:var(--done)}
+.day-name .dn-date{font-weight:500;letter-spacing:0.02em;text-transform:none;color:var(--ink-3);margin-left:var(--sp-2)}
+.dn-today{
+  display:inline-block;margin-left:var(--sp-2);
+  background:var(--ink);color:#fff;
+  font-size:var(--fs-xs);font-weight:700;letter-spacing:0.06em;
+  padding:1px var(--sp-2);border-radius:var(--r-pill);
+}
+.day-card.is-past{opacity:.82}
 /* Completed-week tick now sits inside the pill — no clipping at container edges */
 .week-tab.wdone::after{content:'✓';margin-left:var(--sp-2);color:var(--done);font-weight:700}
 .week-tab.active.wdone::after{color:#6FDCB8}
@@ -540,6 +598,8 @@ h1{
 <h1>Carl Summer Plan Refined</h1>
 <p class="subtitle">Running + cycling + 1–2 hybrid strength sessions/week · Jun–Sep 2026 · West Byfleet · 16 weeks</p>
 
+<div class="today-bar" id="today-bar"></div>
+
 <div class="sec">
 <p class="sec-label">Weekly targets — building to by end of summer</p>
 <div class="metric-row">
@@ -554,9 +614,9 @@ h1{
 <div class="sec">
 <p class="sec-label">16-week summer structure</p>
 <div class="phase-tabs">
-  <button class="phase-tab active" onclick="showPhase('p1',this)">Phase 1 — Rebuild (4 wks)</button>
-  <button class="phase-tab" onclick="showPhase('p2',this)">Phase 2 — Build (8 wks)</button>
-  <button class="phase-tab" onclick="showPhase('p3',this)">Phase 3 — Sharpen (4 wks)</button>
+  <button class="phase-tab active" data-phase="p1" onclick="showPhase('p1',this)">Phase 1 — Rebuild (4 wks)</button>
+  <button class="phase-tab" data-phase="p2" onclick="showPhase('p2',this)">Phase 2 — Build (8 wks)</button>
+  <button class="phase-tab" data-phase="p3" onclick="showPhase('p3',this)">Phase 3 — Sharpen (4 wks)</button>
 </div>
 <div id="p1" class="phase-panel active">
   <p class="phase-note">Goal: re-establish consistency and movement patterns. One quality session per week. Strength at moderate loads. Deload at Week 4.</p>
@@ -823,6 +883,57 @@ const PLAN = {
   ]}
 };
 
+// ── CALENDAR ANCHOR ──────────────────────────────────────────────────────────
+// The plan is pinned to real dates. Weeks run Monday→Sunday.
+// Week 1 = Mon 15 Jun 2026, so Week 8 = Mon 3 Aug 2026 and Week 16 ends Sun 4 Oct.
+// If the plan ever slips a week, change ONLY the line below.
+const PLAN_START = new Date(2026, 5, 15);   // month is 0-indexed: 5 = June
+const TOTAL_WEEKS = 16;
+const DAY_MS = 86400000;
+
+function midnight(d){const x=new Date(d);x.setHours(0,0,0,0);return x;}
+function mondayOf(d){const x=midnight(d);x.setDate(x.getDate()-((x.getDay()+6)%7));return x;}
+// Whole days, rounded — immune to BST/GMT transitions inside the plan window
+function weekOffsetNow(){
+  return Math.floor(Math.round((mondayOf(new Date())-mondayOf(PLAN_START))/DAY_MS)/7);
+}
+function planStatus(){
+  const o=weekOffsetNow();
+  return o<0 ? 'before' : o>TOTAL_WEEKS-1 ? 'after' : 'active';
+}
+function currentWeek(){return Math.min(TOTAL_WEEKS,Math.max(1,weekOffsetNow()+1));}
+function weekStart(n){const d=new Date(PLAN_START);d.setDate(d.getDate()+(n-1)*7);return d;}
+function phaseOf(n){
+  for(const p of ['p1','p2','p3']) if(PLAN[p].weeks.some(w=>w.n===n)) return p;
+  return 'p1';
+}
+function weekObj(n){const p=phaseOf(n);return PLAN[p].weeks.find(w=>w.n===n);}
+
+const DAY_IDX={Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6};
+function dayDate(n,label){
+  const d=weekStart(n);
+  d.setDate(d.getDate()+(DAY_IDX[label.slice(0,3)]||0));
+  return d;
+}
+const fmtD  = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const fmtDW = d => d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+function weekRange(n){
+  const a=weekStart(n), b=new Date(a); b.setDate(b.getDate()+6);
+  return fmtD(a)+' – '+fmtD(b);
+}
+function weekRangeFull(n){
+  const a=weekStart(n), b=new Date(a); b.setDate(b.getDate()+6);
+  return fmtDW(a)+' – '+fmtDW(b);
+}
+function shortRange(n){
+  const a=weekStart(n), b=new Date(a); b.setDate(b.getDate()+6);
+  return a.getMonth()===b.getMonth()
+    ? a.getDate()+'–'+fmtD(b)
+    : fmtD(a)+'–'+fmtD(b);
+}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+function isToday(d){return sameDay(d,new Date());}
+
 // ── Button icons — inline SVG so they work offline and inherit button colour ──
 const SVG = (p) => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" `
   + `stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
@@ -987,6 +1098,61 @@ function showWeek(phaseId,wNum){
   if(wt)wt.classList.add('active');
 }
 
+// ── Anchor the app to today ───────────────────────────────────────────────────
+function goToCurrentWeek(scroll){
+  const st=planStatus();
+  const n=currentWeek();
+  const pid=phaseOf(n);
+  document.querySelectorAll('.phase-panel').forEach(el=>el.classList.toggle('active',el.id===pid));
+  document.querySelectorAll('.phase-tab').forEach(el=>el.classList.toggle('active',el.dataset.phase===pid));
+  showWeek(pid,n);
+  if(scroll){
+    const target = (st==='active' ? document.querySelector('#wp_'+pid+'_'+n+' .day-card[data-today]') : null)
+                || document.getElementById('wp_'+pid+'_'+n);
+    if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+function renderTodayBar(){
+  const bar=document.getElementById('today-bar');
+  if(!bar)return;
+  const st=planStatus();
+  const n=currentWeek();
+  const week=weekObj(n);
+  const phaseLabel=PLAN[phaseOf(n)].label;
+
+  if(st==='before'){
+    bar.innerHTML=`<div class="tb-main"><span class="tb-kicker">Not started</span>
+      <span class="tb-session">Week 1 begins ${fmtDW(weekStart(1))}</span>
+      <span class="tb-meta">${phaseLabel}</span></div>
+      <button class="tb-btn" onclick="goToCurrentWeek(true)">Go to Week 1</button>`;
+    return;
+  }
+  if(st==='after'){
+    bar.innerHTML=`<div class="tb-main"><span class="tb-kicker">Plan complete</span>
+      <span class="tb-session">16 weeks done — ${fmtDW(weekStart(1))} to ${weekRangeFull(TOTAL_WEEKS).split(' – ')[1]}</span>
+      <span class="tb-meta">Time to set the next block.</span></div>
+      <button class="tb-btn" onclick="goToCurrentWeek(true)">Go to Week 16</button>`;
+    return;
+  }
+
+  const today=new Date();
+  const todays=week.days.filter(d=>isToday(dayDate(n,d.n)));
+  const names=todays.length?todays.map(d=>d.s).join('  +  '):'Nothing scheduled';
+  bar.innerHTML=`<div class="tb-main">
+      <span class="tb-kicker">Today · ${fmtDW(today)}</span>
+      <span class="tb-session">${names}</span>
+      <span class="tb-meta">Week ${n} of ${TOTAL_WEEKS} · ${phaseLabel}${week.deload?' · deload':''}</span>
+    </div>
+    <button class="tb-btn" onclick="goToCurrentWeek(true)">Jump to today</button>`;
+}
+
+// If the app sits open past midnight, re-anchor rather than showing stale state
+let ANCHOR_DAY=new Date().getDate();
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&new Date().getDate()!==ANCHOR_DAY)location.reload();
+});
+
 // ── Build UI ──────────────────────────────────────────────────────────────────
 function buildPhase(phaseId){
   const phase=PLAN[phaseId];
@@ -1000,7 +1166,8 @@ function buildPhase(phaseId){
     const tab=document.createElement('button');
     tab.className='week-tab'+(wi===0?' active':'');
     tab.id='wt_'+wKey;
-    tab.textContent='Week '+week.n+(week.deload?' ↓':'');
+    if(week.n===currentWeek()&&planStatus()==='active')tab.classList.add('is-now');
+    tab.innerHTML=`<span>Week ${week.n}${week.deload?' ↓':''}</span><span class="wt-date">${shortRange(week.n)}</span>`;
     tab.onclick=()=>showWeek(phaseId,week.n);
     tabsEl.appendChild(tab);
 
@@ -1008,6 +1175,12 @@ function buildPhase(phaseId){
     const wp=document.createElement('div');
     wp.className='week-panel'+(wi===0?' active':'');
     wp.id='wp_'+wKey;
+
+    const wd=document.createElement('p');
+    wd.className='week-dates';
+    const live=(week.n===currentWeek()&&planStatus()==='active');
+    wd.innerHTML=weekRangeFull(week.n)+(live?' &nbsp;·&nbsp; <span class="live">● this week</span>':'');
+    wp.appendChild(wd);
 
     if(week.deload){
       const b=document.createElement('div');
@@ -1037,9 +1210,15 @@ function buildPhase(phaseId){
       const energyV=ld(dKey+'_energy',0);
       const iKey=inferIntent(day);
 
+      const dDate=dayDate(week.n,day.n);
+      const dToday=isToday(dDate);
+      const dPast=midnight(dDate)<midnight(new Date());
+
       const dc=document.createElement('div');
       dc.id='dc_'+dKey;
-      dc.className='day-card'+(day.rest?' rest-bg':'')+(status==='done'?' done-card':status==='skipped'?' skip-card':'');
+      dc.className='day-card'+(day.rest?' rest-bg':'')+(status==='done'?' done-card':status==='skipped'?' skip-card':'')
+        +(dToday?' is-today':'')+(dPast&&status==='pending'?' is-past':'');
+      if(dToday)dc.setAttribute('data-today','1');
 
       const eBtns=ENERGY_EMOJIS.slice(1).map((e,i)=>`<button class="ebtn${energyV===i+1?' active':''}" id="eb_${dKey}_${i+1}" title="${ENERGY_LABELS[i+1]}" onclick="setEnergy('${dKey}','${wKey}','${phaseId}',${i+1})">${e}</button>`).join('');
 
@@ -1049,7 +1228,7 @@ function buildPhase(phaseId){
       const iPanel=iKey?`<div class="intent${iOpen?' vis':''}" id="in_${dKey}">${intentHTML(iKey)}</div>`:'';
 
       dc.innerHTML=`
-        <span class="day-name">${day.n}</span>
+        <span class="day-name">${day.n}<span class="dn-date">${fmtD(dDate)}</span>${dToday?'<span class="dn-today">TODAY</span>':''}</span>
         <span class="session-name">${day.s}</span>
         <span class="session-detail">${day.d}</span>
         <span class="badge ${day.b}">${BADGE_LABELS[day.b]||'Rest'}</span>
@@ -1248,6 +1427,10 @@ function clearWeek(wKey,phaseId,wNum){
 buildPhase('p1');
 buildPhase('p2');
 buildPhase('p3');
+
+// Open on the live week, every time
+renderTodayBar();
+goToCurrentWeek(false);
 
 // ── PWA: register service worker for offline use ─────────────────────────────
 if ('serviceWorker' in navigator) {
