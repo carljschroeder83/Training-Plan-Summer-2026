@@ -1,8 +1,8 @@
 // Carl Summer Plan Refined — Service Worker
-// v4: network-first for the app shell so plan updates land on next open,
+// v5: long-run ceiling revision (W10-W13). network-first for the app shell so plan updates land on next open,
 //     cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v4';
+const CACHE_NAME = 'summer-plan-v5';
 const ASSETS = [
   './',
   './index.html',
