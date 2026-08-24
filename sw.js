@@ -1,8 +1,9 @@
 // Carl Summer Plan Refined — Service Worker
-// v5: long-run ceiling revision (W10-W13). network-first for the app shell so plan updates land on next open,
+// v6: Week 11 recalibration (threshold band held at 4:24-4:28, VO2 reset to 5x1km @ 4:02-4:06,
+//     Thu 400s cut) + Week 12 Parkrun target revised to 20:20-20:40. network-first for the app shell so plan updates land on next open,
 //     cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v5';
+const CACHE_NAME = 'summer-plan-v6';
 const ASSETS = [
   './',
   './index.html',
