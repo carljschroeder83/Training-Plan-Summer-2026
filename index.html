@@ -657,6 +657,25 @@ h1{
 <div class="divider"></div>
 
 <div class="sec">
+<p class="sec-label">Race-day warm-up — the priming protocol</p>
+<div class="sbox">
+  <div class="sbox-title"><span class="badge b-key">Time trial / Parkrun</span> Countdown from the gun</div>
+  <ul>
+    <li><strong>T−45 to T−30</strong> — 12–15min easy jog @ 6:00–6:20/km. Conversational. This is circulation, not fitness.</li>
+    <li><strong>T−28</strong> — 4× 20s strides, full walk-back recovery. Neuromuscular only; do not let these become efforts.</li>
+    <li><strong>T−22 to T−19</strong> — <strong>THE PRIMER: 2–3min continuous @ 4:10–4:15/km.</strong> This is the part that is currently missing. It must be above lactate threshold — a stride is too short and an easy jog is too soft. You should finish it breathing hard and recover completely.</li>
+    <li><strong>T−19 to T−6</strong> — kit change, toilet, easy walking and light jogging. <strong>Do not sit down and do not stand still.</strong></li>
+    <li><strong>T−3</strong> — 2× 15s accelerations to goal pace, then walk to the line.</li>
+    <li><strong>T−0 to 200m</strong> — distance-based governor. Glance at the watch at 200m; if it reads faster than 4:12/km, ease off immediately. Do not pace the opener by feel.</li>
+  </ul>
+  <p class="sbox-note"><strong>Why the primer works.</strong> Starting cold, oxygen uptake lags demand for the first 90–120 seconds and the shortfall is covered anaerobically. That buffer feels free — no breathing signal, no leg heaviness — so you pace off a perception that has not yet caught up with the cost, and add 8–15s/km of stride length. A prior bout above threshold speeds VO2 kinetics, raises baseline motor unit recruitment and reduces the slow component, so the effort <em>feels like what it costs from the first stride</em>. The recovery window matters: less than ~6min and you carry residual fatigue to the line, more than ~15min and the effect washes out. Aim for 9–12min between the end of the primer and the gun. At 105kg the unprimed oxygen deficit is larger in absolute terms than for a lighter runner, so there is more here to gain than the textbook average.</p>
+</div>
+<div class="card"><p class="card-title">The same problem shows up on Tuesday</p><p class="card-body">Opener overshoot is not a discipline failure, it is an unprimed system reporting bad information — and it appears wherever the first hard effort follows a gap. <strong>Week 12's threshold session had 171 seconds between the end of the warm-up and the start of rep 1</strong>, which is long enough for HR and VO2 to decay most of the way back to baseline: rep 1 was effectively a second cold start. The plan already says <em>prime before rep 1, strides then start within 90 seconds</em> — treat that as a hard rule, not a suggestion. Applies to threshold, VO2 and every time trial.</p></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec">
 <p class="sec-label">Hybrid strength sessions — detail</p>
 <div class="sbox">
   <div class="sbox-title"><span class="badge b-str">Session A</span> Power + lower body</div>
@@ -838,7 +857,7 @@ const PLAN = {
       {n:'Wed',s:'Easy ride',d:'30 min easy spin @ 55–60% FTP. Pure recovery.',b:'b-ride'},
       {n:'Thu',s:'Easy run + strides',d:'6km @ Z1 + 4× 20s strides. Short and sharp. Legs should feel restless by Friday.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
-      {n:'Sat',s:'🏁 Parkrun 5K',d:'Warm up 2km easy, then run Parkrun as a genuine 5K time trial. <strong>Target 20:20–20:40 (4:04–4:08/km).</strong> Revised after Weeks 9–10: two corroborating threshold sessions landed at 4:26 and 4:30, which is VDOT ~47 and predicts ~20:35. A deload plus taper is worth roughly 12–25s on that, so 20:20 is the stretch and anything under 20:20 means the Week 10 dip was noise. Pacing: open at 4:08, NEVER faster, settle to 4:05–4:06, empty km 5. This re-anchors VDOT for all Phase 3 paces, and the finish-line HR on the HRM 200 is your first valid HRmax anchor. Cool down 1–2km.',b:'b-run'},
+      {n:'Sat',s:'🏁 Parkrun 5K',d:'<strong>Warm up to the priming protocol</strong> (full card above): 12–15min easy, 4× 20s strides, then <strong>2–3min continuous at 4:10–4:15/km finishing 9–12min before the gun</strong>. Do not stand still in the gap. Then run Parkrun as a genuine 5K time trial. <strong>Target 20:20–20:40 (4:04–4:08/km).</strong> Revised after Weeks 9–10: two corroborating threshold sessions landed at 4:26 and 4:30, which is VDOT ~47 and predicts ~20:35. A deload plus taper is worth roughly 12–25s on that, so 20:20 is the stretch and anything under 20:20 means the Week 10 dip was noise. Pacing: open at 4:08, NEVER faster, settle to 4:05–4:06, empty km 5. This re-anchors VDOT for all Phase 3 paces, and the finish-line HR on the HRM 200 is your first valid HRmax anchor. Cool down 1–2km.',b:'b-run'},
       {n:'Sun',s:'Long easy run',d:'90min @ Z1. Sunday AM, genuinely easy. End the phase relaxed and ready.',b:'b-run'}
     ]}
   ]},
@@ -995,10 +1014,10 @@ const INTENT = {
     t:'Time trial / benchmark',
     aim:'Measure current fitness and re-anchor every pace in the plan.',
     tv:'An honest, evenly-paced result.',
-    con:'Warm up properly. Start AT target pace, not above it.',
-    exe:'First km at or just under target — never faster. Negative split if it is there. Record finish HR (strap) for the HRmax cross-check.',
-    win:'Km 5 is your fastest.',
-    fail:'A hot opening km. Costs more in the back half than it ever buys up front.'
+    con:'Warm up must include a PRIMER — 2–3min above threshold, finishing 9–12min before the gun. Start AT target pace, not above it.',
+    exe:'Prime, then check the watch at 200m and correct immediately if it reads fast. Distance-based governor, not intent-based pacing. First km at or just under target — never faster. Negative split if it is there. Record finish HR (strap) for the HRmax cross-check.',
+    win:'Km 5 is your fastest, and the 200m split is within 3s/km of target.',
+    fail:'A hot opening km off an unprimed system. Cold, the first 90–120s feel free because oxygen uptake has not caught up — so perception under-reports the cost and stride length creeps. Costs more in the back half than it ever buys up front.'
   },
   ftp:{
     t:'FTP test',
