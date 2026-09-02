@@ -1,10 +1,11 @@
 // Carl Summer Plan Refined — Service Worker
-// v7: Race-day priming protocol added (new reference section + Week 12 Parkrun warm-up
-//     rewritten + race intent panel updated with the 200m distance governor).
+// v8: Week 12 Parkrun target re-anchored to VDOT 48–49 (20:05–20:25, 4:01–4:05/km)
+//     off Week 11 Tue/Sat and Week 12 Tue; pacing and shoe call updated; 200m
+//     distance governor tightened from 4:12 to 4:10/km to match the new opener.
 //     network-first for the app shell so plan updates land on next open,
 //     cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v7';
+const CACHE_NAME = 'summer-plan-v8';
 const ASSETS = [
   './',
   './index.html',
