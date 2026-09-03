@@ -1,14 +1,18 @@
 // Carl Summer Plan Refined — Service Worker
-// v9: App icon replaced. New roundel mark — teal disc on a bright yellow field,
-//     with a navy running figure above the CS monogram and a navy dumbbell below,
-//     stacked on a single vertical axis. Both icon-192.png and icon-512.png
-//     regenerated; all content sits inside the maskable safe circle so Android's
-//     circular crop does not clip it. Cache version bump is required because
-//     icons are served cache-first.
-//     network-first for the app shell so plan updates land on next open,
-//     cache-first for icons/manifest. Still fully offline-capable.
+// v10: Full teal / yellow / hot-pink reskin. App icon replaced with a yellow
+//      calendar glyph and hot-pink CS monogram on a teal background
+//      (icon-192.png, icon-512.png regenerated). manifest.json theme_color
+//      and background_color moved to brand teal (#0FA8A0) so the status bar
+//      and splash screen match the icon. index.html design tokens rewired:
+//      page background, ink, session-type badges/spines, today-bar, active
+//      tab fill and the deload banner all recoloured — see the DESIGN TOKENS
+//      block in index.html for the full palette. No markup or JS logic
+//      changed. Cache version bump is required because icons and manifest
+//      are served cache-first.
+//      network-first for the app shell so plan updates land on next open,
+//      cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v9';
+const CACHE_NAME = 'summer-plan-v10';
 const ASSETS = [
   './',
   './index.html',
