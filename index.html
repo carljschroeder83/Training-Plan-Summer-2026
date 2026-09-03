@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#f7f6f2">
+<meta name="theme-color" content="#0FA8A0">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -18,27 +18,33 @@
    Change a value here and it propagates everywhere. No hunting.
    ═══════════════════════════════════════════════════════════════════════════ */
 :root{
+  /* ── Brand — teal / yellow / hot pink ──────────────────────────────────── */
+  --teal:#0FA8A0;
+  --teal-deep:#085041;
+  --yellow:#FFC933;
+  --pink:#E0117F;
+
   /* ── Surfaces & ink ─────────────────────────────────────────────────────── */
-  --bg:#f7f6f2;
+  --bg:#F2FAF8;
   --surface:#ffffff;
-  --sunk:#efeee7;
-  --line:#dbd9cf;
-  --line-soft:#e8e6dd;
-  --ink:#17171a;      /* primary text    — 15.7:1 on --bg  (AAA) */
-  --ink-2:#55544f;    /* secondary text  —  7.2:1 on --bg  (AAA) */
-  --ink-3:#6e6d66;    /* labels, meta    —  4.8:1 on --bg  (AA)  */
+  --sunk:#E7F5F1;
+  --line:#CFE9E2;
+  --line-soft:#DEF0EA;
+  --ink:#0B2C27;       /* primary text    — near-black teal, ~15:1 on --bg */
+  --ink-2:#3F5B55;     /* secondary text  — dark teal-grey, AAA on --bg    */
+  --ink-3:#5C7871;     /* labels, meta    — mid teal-grey, AA on --bg      */
 
   /* ── Session-type accents — drive both badges and the card spine ────────── */
-  --run:#0C447C;   --run-bg:#E1EDFA;
-  --ride:#085041;  --ride-bg:#DCF2EA;
-  --str:#6B3D06;   --str-bg:#F8EAD2;
-  --hit:#3C3489;   --hit-bg:#E9E8FD;
-  --rst:#5C5B55;   --rst-bg:#EAE8E0;
-  --key:#17171a;
+  --run:#085041;   --run-bg:#D6F2EA;
+  --ride:#0B6B7A;  --ride-bg:#D7F1F5;
+  --str:#7A5A00;   --str-bg:#FFF1B8;
+  --hit:#99245A;   --hit-bg:#FBDCEA;
+  --rst:#5C6A66;   --rst-bg:#E7EFEC;
+  --key:#E0117F;
 
   /* ── Status ─────────────────────────────────────────────────────────────── */
-  --done:#14755A;       /* 5.6:1 with white text (AA) */
-  --done-soft:#1D9E75;  /* borders + progress fill only — never text */
+  --done:#0B7A5B;       /* 5.6:1 with white text (AA) */
+  --done-soft:#1FAE82;  /* borders + progress fill only — never text */
   --danger:#B4342F;     /* 5.6:1 on --bg (AA) */
 
   /* ── Type scale ─────────────────────────────────────────────────────────────
@@ -129,7 +135,7 @@ h1{
   transition:background .15s,color .15s,border-color .15s;
 }
 .phase-tab:hover{border-color:var(--ink-3);color:var(--ink)}
-.phase-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.phase-tab.active{background:var(--pink);color:#fff;border-color:var(--pink)}
 .phase-panel{display:none}
 .phase-panel.active{display:block}
 
@@ -149,17 +155,17 @@ h1{
 .week-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
 .week-tab .wt-date{font-size:var(--fs-xs);font-weight:500;color:var(--ink-3);margin-top:1px}
 .week-tab:hover{border-color:var(--ink-3);color:var(--ink)}
-.week-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.week-tab.active .wt-date{color:#bdbcb4}
+.week-tab.active{background:var(--pink);color:#fff;border-color:var(--pink)}
+.week-tab.active .wt-date{color:#F7C7DF}
 /* The live week is ringed even when you've tabbed away from it */
-.week-tab.is-now{box-shadow:0 0 0 2px var(--ink)}
+.week-tab.is-now{box-shadow:0 0 0 2px var(--teal)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TODAY BAR — the app answers "what am I doing today?" before you scroll
    ═══════════════════════════════════════════════════════════════════════════ */
 .today-bar{
   display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;
-  background:var(--ink);
+  background:var(--teal-deep);
   color:#fff;
   border-radius:var(--r-lg);
   padding:var(--sp-4);
@@ -171,20 +177,20 @@ h1{
   display:block;
   font-size:var(--fs-xs);font-weight:700;
   text-transform:uppercase;letter-spacing:0.09em;
-  color:#a6a49b;
+  color:#9FDDCB;
   margin-bottom:2px;
 }
 .tb-session{display:block;font-size:var(--fs-md);font-weight:700;line-height:1.25}
-.tb-meta{display:block;font-size:var(--fs-sm);color:#bdbcb4;margin-top:2px}
+.tb-meta{display:block;font-size:var(--fs-sm);color:#BFE9DD;margin-top:2px}
 .tb-btn{
   font-size:var(--fs-sm);font-weight:600;
   min-height:var(--tap);padding:0 var(--sp-4);
   border-radius:var(--r-sm);
-  border:1px solid #55544f;
+  border:1px solid #1D8A78;
   background:transparent;color:#fff;
   white-space:nowrap;
 }
-.tb-btn:hover{background:#2b2b2e;border-color:#8a8880}
+.tb-btn:hover{background:#0B6B5E;border-color:#5DCAA5}
 
 /* Week date range above the focus bar */
 .week-dates{
@@ -226,13 +232,13 @@ h1{
 }
 .week-focus strong{color:var(--ink)}
 .deload-banner{
-  background:var(--hit-bg);
-  border:1px solid #c3bff5;
+  background:var(--str-bg);
+  border:1px solid #F0D783;
   border-radius:var(--r);
   padding:var(--sp-3) var(--sp-4);
   font-size:var(--fs-sm);
   font-weight:500;
-  color:var(--hit);
+  color:var(--str);
   margin-bottom:var(--sp-2);
 }
 .week-summary{
@@ -289,7 +295,7 @@ h1{
 .day-card:has(.b-ride){--spine:var(--ride)}
 .day-card:has(.b-str){--spine:var(--str)}
 .day-card:has(.b-hit){--spine:var(--hit)}
-.day-card:has(.b-rst){--spine:#cfcdc3}
+.day-card:has(.b-rst){--spine:#C3D6D1}
 .day-card:has(.b-key){--spine:var(--key)}
 
 /* Key sessions carry visible weight — they should look like the week's spine */
