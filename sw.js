@@ -1,4 +1,10 @@
 // Carl Summer Plan Refined — Service Worker
+// v13: Strength prescriptions revised after review. Back squat moves from 3×3 @82%
+//      (nine reps, below Prilepin range) to 3×5 @80% in Weeks 13, 14 and 19;
+//      Week 17 reload set at 3×5 @72%. Clean pull raised 80kg -> 95kg. Week 20
+//      taper left low-rep by design. New rationale card added to the strength
+//      section covering why heavy/low-volume beats high-rep for running economy.
+//
 // v12: Re-anchored VDOT 47 -> 48 after the official Woking result came in at
 //      20:50 (not the ~21:15 the GPS file implied). All Phase 3 pace bands moved
 //      4s/km faster; benchmark target 20:00-20:20. Week 12 card corrected with
@@ -25,7 +31,7 @@
 //      network-first for the app shell so plan updates land on next open,
 //      cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v12';
+const CACHE_NAME = 'summer-plan-v13';
 const ASSETS = [
   './',
   './index.html',

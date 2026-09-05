@@ -684,6 +684,7 @@ h1{
 
 <div class="sec">
 <p class="sec-label">Hybrid strength sessions — detail</p>
+<div class="card"><p class="card-title">Why heavy and low-volume, not light and high-rep</p><p class="card-body">Runners do not lift for muscular endurance or size. The adaptation is neural and tendinous: more motor unit recruitment, higher rate of force development, and greater musculotendinous stiffness, so the leg spring returns more elastic energy per stride. Running economy improves because of that, not because the muscle got better at doing lots of reps. <strong>Force magnitude drives it, not accumulated work</strong> — reviews in trained distance runners (Beattie 2014, Blagrove 2018, Berryman 2018) consistently find heavy and plyometric protocols improve economy while submaximal high-repetition work does little or nothing. Tendon is the clearest case: Arampatzis showed high-strain loading raises tendon stiffness while low-strain loading at <em>matched volume and duration</em> does not, so equal-cumulative-load reasoning is the wrong currency. There is also a practical cost — 3×10-12 back squat at 65-70% is 30+ reps of heavy eccentric loading, which is exactly the posterior chain DOMS that already forced RDLs down to 3×5 and split squats out of VO2 weeks. And at 105kg, added muscle mass is a cost, not a benefit. <strong>The correct dose is heavy and brief: 3×5 at 80%, fifteen reps, Prilepin optimal.</strong> The original 3×3 at 82% was nine reps and fell below the effective range entirely — light enough to feel easy and short enough to train nothing. The exception is the hotel Session H at 3×6 unilateral: when the heaviest dumbbells are 32kg you cannot reach the force magnitude, so split squats raise per-limb force instead and the goal shifts from stimulus to retention. That is the best available option, not the better one.</p></div>
 <div class="sbox">
   <div class="sbox-title"><span class="badge b-str">Session A</span> Power + lower body</div>
   <ul>
@@ -872,7 +873,7 @@ const PLAN = {
     { n:13, focus:'<strong>Week 13 — Sharpen begins, honestly anchored.</strong> <em>Re-anchored after the Week 12 Parkrun.</em> Official time <strong>20:50</strong> (23rd of 419), roughly 20:25 wind-adjusted, which puts VDOT at <strong>48</strong> — the same number the Week 11 and 12 sessions had been reporting. Four independent sources now agree. Every pace below is written off 48 — threshold 4:18-4:22, interval 3:56-4:02, goal 5K pace 4:02. You are at home with track and gym for this week and next; these two weeks carry the whole block, so do not waste them.', deload:false, days:[
       {n:'Mon',s:'Rest / mobility',d:'Full rest. No dieting from here to the benchmark.',b:'b-rst',rest:true},
       {n:'Tue',s:'Threshold run',d:'2km E + 4× 8min @ 4:18-4:22/km + 90s jog between + 2km E. 32min accumulated. Shorter blocks with short recoveries are what make the pace holdable. <strong>Prime before rep 1 and start within 90 seconds of finishing the warm-up</strong> — Week 12 left 171s and rep 1 was a second cold start.',b:'b-key'},
-      {n:'Tue PM',s:'Maintenance strength',d:'Run first. Back squat 3×3 @82% (131kg). Clean pull 3×2 @80kg. Push press 3×3 @80kg. Pull-ups 3×5 +10kg. Core 2 rounds. 40 min max.',b:'b-str'},
+      {n:'Tue PM',s:'Maintenance strength',d:'Run first. <strong>Back squat 3×5 @80% (128kg).</strong> Clean pull 3×3 @95kg. Push press 3×3 @80kg. Pull-ups 3×5 +10kg. Core 2 rounds. 40 min max. <em>Revised 5 Sep:</em> 3×3 was nine reps at 82%, which falls below Prilepin\'s effective range — too light to be a maximal-strength stimulus and too short to be anything else. 3×5 at 80% is fifteen reps, which is optimal. Clean pull raised from 80kg (67% of your clean) to 95kg, which is where a pull actually trains something.',b:'b-str'},
       {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 20min @ 90-95% FTP + 10min cool down.',b:'b-ride'},
       {n:'Thu',s:'Easy run + 400s',d:'10km @ Z1 + 6× 400m @ 3:56-4:00/km + 75-90s jog. Faster than race pace, short enough to stay clean. Not goal pace — goal pace is 4:02.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest. Protect Saturday quality.',b:'b-rst',rest:true},
@@ -882,7 +883,7 @@ const PLAN = {
     { n:14, focus:'<strong>Week 14 — Goal-pace contact.</strong> Last full week at home before Canada. Threshold consolidates in longer blocks and Saturday is 4.8km of contact with the pace you intend to race on 31 October. Tuesday PM is the last heavy barbell session for four weeks, so make it count and then let it go.', deload:false, days:[
       {n:'Mon',s:'Rest / mobility',d:'Full rest.',b:'b-rst',rest:true},
       {n:'Tue',s:'Threshold run',d:'2km E + 2× 15min @ 4:16-4:20/km + 3min jog + 2km E. Same work as Week 13 in longer blocks — consolidation, not progression. The last five minutes of block 2 should feel like race conditions.',b:'b-key'},
-      {n:'Tue PM',s:'Maintenance strength',d:'Run first. Back squat 3×3 @82% (131kg). Clean pull 3×2 @80kg. Push press 3×3 @80kg. Pull-ups 3×5. Core 2 rounds. <strong>Last heavy barbell session until Week 17.</strong>',b:'b-str'},
+      {n:'Tue PM',s:'Maintenance strength',d:'Run first. <strong>Back squat 3×5 @80% (128kg).</strong> Clean pull 3×3 @95kg. Push press 3×3 @80kg. Pull-ups 3×5. Core 2 rounds. <strong>Last heavy barbell session until Week 17.</strong>',b:'b-str'},
       {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 20min @ 90-95% FTP + 10min cool down. Last structured ride before travel.',b:'b-ride'},
       {n:'Thu',s:'Easy run',d:'9km @ Z1. Legs may be heavy after Tuesday and Wednesday — keep it genuinely easy. No strides; save the sharpness for Saturday.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
@@ -914,7 +915,7 @@ const PLAN = {
     { n:17, focus:'<strong>Week 17 — Reload at home.</strong> One clean week between two trips. Barbell comes back but deliberately below where you left it — three weeks without loading means the first session back is not the place to test 131kg. Quality returns to two sessions. You fly to Washington on Sunday.', deload:false, days:[
       {n:'Mon',s:'Rest / mobility',d:'Full rest.',b:'b-rst',rest:true},
       {n:'Tue',s:'Threshold run',d:'2km E + 3× 10min @ 4:18-4:22/km + 2min jog + 2km E. 30min. The first real test of whether the travel block held. If it lands clean, nothing has been lost.',b:'b-key'},
-      {n:'Tue PM',s:'Strength — reload',d:'Run first. Back squat 3×3 @80% (128kg) — <strong>deliberately below the pre-travel 131kg.</strong> Clean pull 3×3 @80kg. Push press 3×3 @75kg. Pull-ups 3×5. Core 2 rounds. Expect DOMS; that is the point of going light.',b:'b-str'},
+      {n:'Tue PM',s:'Strength — reload',d:'Run first. <strong>Back squat 3×5 @72% (115kg)</strong> — deliberately below the pre-travel 128kg. Clean pull 3×3 @85kg. Push press 3×3 @70kg. Pull-ups 3×5. Core 2 rounds. Three weeks without a barbell is not long enough to lose much strength, but it is long enough to lose tolerance for the eccentric load. Expect DOMS; going light is how you keep it out of Saturday.',b:'b-str'},
       {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 15min @ 88-92% FTP + 10min cool down. Slightly reduced — first ride in four weeks.',b:'b-ride'},
       {n:'Thu',s:'Easy run + strides',d:'8km @ Z1 + 4× 20s strides.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
@@ -935,7 +936,7 @@ const PLAN = {
     { n:19, focus:'<strong>Week 19 — Re-entry and sharpen.</strong> Home for good. Two weeks to the benchmark: this is the only week left with real training stress in it, so it does the sharpening and Week 20 does nothing but taper. Threshold steps down a notch, Saturday is the dress rehearsal.', deload:false, days:[
       {n:'Mon',s:'Rest / mobility',d:'Full rest. Second eastbound shift in a month — respect it.',b:'b-rst',rest:true},
       {n:'Tue',s:'Threshold run',d:'2km E + 4× 8min @ 4:16-4:20/km + 90s jog + 2km E. 32min. First pace step of the whole block, and only because Weeks 13-14 earned it. If it comes in at 4:22+, hold the band for Week 20 and adjust the benchmark target down accordingly.',b:'b-key'},
-      {n:'Tue PM',s:'Strength — last loaded session',d:'Run first. Back squat 3×3 @82% (131kg). Push press 3×3 @80kg. Pull-ups 3×5. Core 2 rounds. <strong>Nothing heavy after this.</strong>',b:'b-str'},
+      {n:'Tue PM',s:'Strength — last loaded session',d:'Run first. <strong>Back squat 3×5 @80% (128kg).</strong> Clean pull 3×3 @95kg. Push press 3×3 @80kg. Pull-ups 3×5. Core 2 rounds. <strong>Nothing heavy after this.</strong>',b:'b-str'},
       {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 20min @ 90-95% FTP + 10min cool down.',b:'b-ride'},
       {n:'Thu',s:'Easy run + 400s',d:'8km @ Z1 + 6× 400m @ 3:54-3:58/km + 75-90s jog.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
@@ -945,7 +946,7 @@ const PLAN = {
     { n:20, focus:'<strong>Week 20 — Taper and benchmark.</strong> Volume drops, intensity holds, nothing gets added. <strong>5K benchmark Saturday 31 October.</strong> Everything from here is about arriving fresh and executing the first kilometre correctly. The autumn hybrid block starts Monday 2 November.', deload:true, days:[
       {n:'Mon',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
       {n:'Tue',s:'Threshold run — taper',d:'2km E + 3× 8min @ 4:14-4:18/km + 2min jog + 2km E. 24min. Sharp but short. This should feel controlled, not heroic — if it does not, run Saturday off the slower end of the target band.',b:'b-key'},
-      {n:'Tue PM',s:'Strength — light',d:'Run first. Back squat 2×3 @75% (120kg). Push press 2×3 @70kg. Core only. 25 min max. Movement quality, zero fatigue.',b:'b-str'},
+      {n:'Tue PM',s:'Strength — light',d:'Run first. Back squat 2×3 @78% (125kg). Push press 2×3 @70kg. Core only. 25 min max. <strong>Taper is the one place low reps are correct</strong> — six total reps at a moderately heavy load preserves neural drive without generating any fatigue to carry to Saturday. This is potentiation, not stimulus.',b:'b-str'},
       {n:'Wed',s:'Easy ride',d:'40min easy @ 60% FTP. Blood flow only.',b:'b-ride'},
       {n:'Thu',s:'Easy run + strides',d:'5km @ Z1 + 6× 20s strides. Light and sharp. Legs should feel restless by Friday.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest. Fuel per the pre-quality protocol on Saturday morning: white bread or bagel, honey or jam, banana, 90-120min before the gun. No fat, no fibre.',b:'b-rst',rest:true},
