@@ -1,4 +1,9 @@
 // Carl Summer Plan Refined — Service Worker
+// v14: Weeks 13 and 17 VO2 sessions converted from 4× 5:00 to 4× 1200m with
+//      95-97s 400m splits, now that a track is available. Recovery 3:00 -> 2:50
+//      to hold the ~60% cap. Weeks 15 and 18 stay duration-based (no track on
+//      the road). Title, H1 and version stamp bumped to V14.
+//
 // v13: Strength prescriptions revised after review. Back squat moves from 3×3 @82%
 //      (nine reps, below Prilepin range) to 3×5 @80% in Weeks 13, 14 and 19;
 //      Week 17 reload set at 3×5 @72%. Clean pull raised 80kg -> 95kg. Week 20
@@ -31,7 +36,7 @@
 //      network-first for the app shell so plan updates land on next open,
 //      cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v13';
+const CACHE_NAME = 'summer-plan-v14';
 const ASSETS = [
   './',
   './index.html',

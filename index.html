@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Carl's Running Plan V13 - 5 Sep 26</title>
+<title>Carl's Running Plan V14 - 5 Sep 26</title>
 <style>
 /* ═══════════════════════════════════════════════════════════════════════════
    DESIGN TOKENS
@@ -602,8 +602,8 @@ h1{
 </head>
 <body>
 
-<h1>Carl's Running Plan V13</h1>
-<p class="version-stamp">Version 13 &middot; 5 Sep 2026</p>
+<h1>Carl's Running Plan V14</h1>
+<p class="version-stamp">Version 14 &middot; 5 Sep 2026</p>
 <p class="subtitle">Running + cycling + 1–2 hybrid strength sessions/week · Jun–Oct 2026 · West Byfleet · 20 weeks</p>
 
 <div class="today-bar" id="today-bar"></div>
@@ -879,7 +879,7 @@ const PLAN = {
       {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 20min @ 90-95% FTP + 10min cool down.',b:'b-ride'},
       {n:'Thu',s:'Easy run + 400s',d:'10km @ Z1 + 6× 400m @ 3:56-4:00/km + 75-90s jog. Faster than race pace, short enough to stay clean. Not goal pace — goal pace is 4:02.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest. Protect Saturday quality.',b:'b-rst',rest:true},
-      {n:'Sat',s:'VO2max — 4× 5min',d:'2km E + 4× <strong>5:00</strong> @ 3:58-4:02/km + 3:00 jog recovery + 2km E. Written as duration, not distance, so it transfers straight to a hotel treadmill or a canal path later in the block. Recovery is capped at 60% of rep duration. Same pace every rep — if rep 4 is faster than rep 1, rep 1 was too slow.',b:'b-key'},
+      {n:'Sat',s:'VO2max — 4× 1200m',d:'2km E + 4× <strong>1200m</strong> @ 3:58-4:02/km (4:46-4:50 per rep) + 2:50 jog recovery + 2km E. Track session — so use the track: <strong>every 400m must read 95-97s.</strong> Recovery capped at ~60% of rep duration. Same pace every rep; if rep 4 is faster than rep 1, rep 1 was too slow. <strong>Running these to distance means faster is worse, not better</strong> — overshooting to 3:50 shortens the rep to 4:36 and cuts the time at VO2max you came for. The lap splits are the guard against that.',b:'b-key'},
       {n:'Sun',s:'Long easy run',d:'100min @ Z1, morning. Genuinely easy.',b:'b-run'}
     ]},
     { n:14, focus:'<strong>Week 14 — Goal-pace contact.</strong> Last full week at home before Canada. Threshold consolidates in longer blocks and Saturday is 4.8km of contact with the pace you intend to race on 31 October. Tuesday PM is the last heavy barbell session for four weeks, so make it count and then let it go.', deload:false, days:[
@@ -900,7 +900,7 @@ const PLAN = {
       {n:'Thu',s:'Easy run',d:'40min @ Z1.',b:'b-run'},
       {n:'Thu PM',s:'Hotel strength — Session H',d:'Repeat Session H. Twice a week is enough to hold what you have.',b:'b-str'},
       {n:'Fri',s:'Rest or easy',d:'Full rest, or 30min very easy if the week has been sedentary.',b:'b-rst',rest:true},
-      {n:'Sat',s:'VO2max — 5× 4min',d:'2km E + 5× <strong>4:00</strong> @ 4:00-4:04/km + 2:30 jog recovery + 2km E. Duration-based, so no measured course needed. If Kanata parkrun is reachable, run that instead as a hard controlled effort — not a race, and not an excuse to open at 3:50.',b:'b-key'},
+      {n:'Sat',s:'VO2max — 5× 4min',d:'2km E + 5× <strong>4:00</strong> @ 4:00-4:04/km + 2:30 jog recovery + 2km E. Duration-based because there is no track — no measured course needed, and overshooting costs you nothing but breath. If Kanata parkrun is reachable, run that instead as a hard controlled effort — not a race, and not an excuse to open at 3:50.',b:'b-key'},
       {n:'Sun',s:'Long easy run',d:'75-80min @ Z1, morning. Shorter than home weeks by design.',b:'b-run'}
     ]},
     { n:16, focus:'<strong>Week 16 — Ottawa, then home.</strong> Reduced week around the return leg. You fly Ottawa-Montreal-Heathrow on Friday 2 Oct and land Saturday morning at 06:30, so Friday and Saturday are written off. This is now a maintenance week in a longer plan, not the end of anything — <strong>the benchmark has moved to Saturday 31 October.</strong>', deload:true, days:[
@@ -921,7 +921,7 @@ const PLAN = {
       {n:'Wed',s:'Sweet spot ride',d:'Warm up 10min + 2× 15min @ 88-92% FTP + 10min cool down. Slightly reduced — first ride in four weeks.',b:'b-ride'},
       {n:'Thu',s:'Easy run + strides',d:'8km @ Z1 + 4× 20s strides.',b:'b-run'},
       {n:'Fri',s:'Rest',d:'Full rest.',b:'b-rst',rest:true},
-      {n:'Sat',s:'VO2max — 4× 5min',d:'2km E + 4× <strong>5:00</strong> @ 3:58-4:02/km + 3:00 jog recovery + 2km E. Same session as Week 13 — a direct like-for-like read on what the travel block cost.',b:'b-key'},
+      {n:'Sat',s:'VO2max — 4× 1200m',d:'2km E + 4× <strong>1200m</strong> @ 3:58-4:02/km (4:46-4:50 per rep) + 2:50 jog recovery + 2km E. 400m splits 95-97s. Same session as Week 13 — a direct like-for-like read on what the travel block cost.',b:'b-key'},
       {n:'Sun',s:'Easy run + travel',d:'60min @ Z1 in the morning, then fly. VS21 departs 15:50. Run before the airport, not after landing.',b:'b-run'}
     ]},
     { n:18, focus:'<strong>Week 18 — Washington DC. Hold the line.</strong> Omni Shoreham, 11-17 Oct, Rock Creek Park directly adjacent — one of the better city running assets in the US, with continuous paved and trail options straight from the door. Same maintenance template as Ottawa. Fly home Saturday night, land Sunday 10:40.', deload:true, days:[
