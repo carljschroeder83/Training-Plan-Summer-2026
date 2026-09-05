@@ -1,4 +1,17 @@
 // Carl Summer Plan Refined — Service Worker
+// v12: Re-anchored VDOT 47 -> 48 after the official Woking result came in at
+//      20:50 (not the ~21:15 the GPS file implied). All Phase 3 pace bands moved
+//      4s/km faster; benchmark target 20:00-20:20. Week 12 card corrected with
+//      true splits 3:54 / 4:14 / 4:19 / 4:15 / 4:08.
+//
+// v11: Plan extended from 16 to 20 weeks (5 Sep 2026). Phase 3 rewritten and
+//      re-anchored to VDOT 47 off the Week 12 Parkrun. 5K benchmark moved from
+//      Sat 3 Oct to Sat 31 Oct to clear the Ottawa (21 Sep - 3 Oct) and
+//      Washington (11-18 Oct) travel blocks. Weeks 15, 16 and 18 rewritten as
+//      hotel/travel maintenance with duration-based reps and dumbbell strength.
+//      TOTAL_WEEKS, header copy and benchmark metrics updated in index.html.
+//      Cache bump required so the new plan lands on next open.
+//
 // v10: Full teal / yellow / hot-pink reskin. App icon replaced with a yellow
 //      calendar glyph and hot-pink CS monogram on a teal background
 //      (icon-192.png, icon-512.png regenerated). manifest.json theme_color
@@ -12,7 +25,7 @@
 //      network-first for the app shell so plan updates land on next open,
 //      cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v10';
+const CACHE_NAME = 'summer-plan-v12';
 const ASSETS = [
   './',
   './index.html',
