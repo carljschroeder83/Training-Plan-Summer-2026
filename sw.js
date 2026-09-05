@@ -1,4 +1,15 @@
 // Carl Summer Plan Refined — Service Worker
+// v16: Plyometrics added to Thursday warm-ups in Weeks 13, 16, 17 and 19 (pogos,
+//      A-skips, ankling 2×20s each), placed after the easy volume and before the
+//      fast work. Deliberately omitted in Weeks 14 and 20 and on days where
+//      Session H already carries them; each omission is stated in the session.
+//
+// v15: Clean pulls replaced with power cleans (3×3 @60-70kg, fast) in Weeks 13,
+//      14, 17 and 19. Plyometrics added to every strength session, placed after
+//      the lifting and before core. New plyometric and mobility protocol cards.
+//      Guidance cards cut from 19 to 11 and trimmed; Session B (retired since
+//      Week 10) deleted; Session A rewritten to match current prescriptions.
+//
 // v14: Weeks 13 and 17 VO2 sessions converted from 4× 5:00 to 4× 1200m with
 //      95-97s 400m splits, now that a track is available. Recovery 3:00 -> 2:50
 //      to hold the ~60% cap. Weeks 15 and 18 stay duration-based (no track on
@@ -36,7 +47,7 @@
 //      network-first for the app shell so plan updates land on next open,
 //      cache-first for icons/manifest. Still fully offline-capable.
 
-const CACHE_NAME = 'summer-plan-v14';
+const CACHE_NAME = 'summer-plan-v16';
 const ASSETS = [
   './',
   './index.html',
